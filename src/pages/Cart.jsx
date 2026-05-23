@@ -2,13 +2,8 @@ import { useEffect, useState } from "react";
 
 import {
     getCart,
-    removeProductFromCart
-} from "../services/cartService";
-
-import {
-  getCart,
-  removeProductFromCart,
-  updateCartQuantity
+    removeProductFromCart,
+    updateCartQuantity
 } from "../services/cartService";
 
 function Cart() {
@@ -56,15 +51,27 @@ function Cart() {
         }
     };
 
-    const updateQuantity = async (productId, quantity) => {
+    const updateQuantity = async (
+        productId,
+        quantity
+    ) => {
+
         try {
-            const response = await updateCartQuantity(productId, quantity);
+
+            const response =
+                await updateCartQuantity(
+                    productId,
+                    quantity
+                );
 
             alert(response);
 
             fetchCart();
+
         } catch (error) {
+
             console.log(error);
+
             alert("Failed to update quantity");
         }
     };
@@ -92,6 +99,29 @@ function Cart() {
                             Quantity: {item.quantity}
                         </p>
 
+                        <button
+                            onClick={() =>
+                                updateQuantity(
+                                    item.productId,
+                                    item.quantity + 1
+                                )
+                            }
+                        >
+                            +
+                        </button>
+
+                        <button
+                            disabled={item.quantity <= 1}
+                            onClick={() =>
+                                updateQuantity(
+                                    item.productId,
+                                    item.quantity - 1
+                                )
+                            }
+                        >
+                            -
+                        </button>
+
                         <p>
                             Price: ₹{item.price}
                         </p>
@@ -104,23 +134,6 @@ function Cart() {
                             }
                         >
                             Remove
-                        </button>
-
-                        <button
-                            onClick={() =>
-                                updateQuantity(item.productId, item.quantity + 1)
-                            }
-                            >
-                            +
-                        </button>
-
-                        <button
-                            disabled={item.quantity <= 1}
-                            onClick={() =>
-                                updateQuantity(item.productId, item.quantity - 1)
-                            }
-                            >
-                            -
                         </button>
 
                         <hr />
