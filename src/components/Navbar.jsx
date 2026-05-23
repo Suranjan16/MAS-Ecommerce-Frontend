@@ -1,27 +1,27 @@
 import { Link } from "react-router-dom";
 
 function Navbar() {
-  return (
-    <div>
-      <h2>MAS Ecommerce</h2>
+    return (
+        <div>
+            <h2>MAS Ecommerce</h2>
 
-      <Link to="/home">Home</Link>
+            <Link to="/home">Home</Link>
+            <br />
 
-      <br />
+            <Link to="/cart">Cart</Link>
+            <br />
 
-      <Link to="/login">Login</Link>
+            <Link to="/orders">Orders</Link>
+            <br />
 
-      <br />
+            <Link to="/login">Login</Link>
+            <br />
 
-      <Link to="/signup">Signup</Link>
+            <Link to="/signup">Signup</Link>
 
-      <br />
-
-      <Link to="/cart">Cart</Link>
-
-      <hr />
-    </div>
-  );
+            <hr />
+        </div>
+    );
 }
 
 export default Navbar;
