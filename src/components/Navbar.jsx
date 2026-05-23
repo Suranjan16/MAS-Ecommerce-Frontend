@@ -15,6 +15,10 @@ function Navbar() {
 
       <Link to="/signup">Signup</Link>
 
+      <br />
+
+      <Link to="/cart">Cart</Link>
+
       <hr />
     </div>
   );

@@ -5,25 +5,28 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Cart from "./pages/Cart";
 
 function App() {
-  return (
-    <BrowserRouter>
+    return (
+        <BrowserRouter>
 
-      <Navbar />
+            <Navbar />
 
-      <Routes>
-        <Route path="/" element={<Home />} />
+            <Routes>
+                <Route path="/" element={<Home />} />
 
-        <Route path="/home" element={<Home />} />
+                <Route path="/home" element={<Home />} />
 
-        <Route path="/login" element={<Login />} />
+                <Route path="/login" element={<Login />} />
 
-        <Route path="/signup" element={<Signup />} />
-      </Routes>
+                <Route path="/signup" element={<Signup />} />
 
-    </BrowserRouter>
-  );
+                <Route path="/cart" element={<Cart />} />
+            </Routes>
+
+        </BrowserRouter>
+    );
 }
 
 export default App;

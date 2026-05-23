@@ -2,21 +2,39 @@ import axios from "axios";
 
 const API_URL = "http://localhost:8080/cart";
 
-export const addProductToCart = async (productId, quantity = 1) => {
-  const token = localStorage.getItem("token");
+export const addProductToCart = async (
+  productId,
+  quantity = 1
+) => {
 
-  console.log("Token from localStorage:", token);
+  const token = localStorage.getItem("token");
 
   const response = await axios.post(
     `${API_URL}/add`,
     {
-      productId: productId,
-      quantity: quantity,
+      productId,
+      quantity,
     },
     {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
+      },
+    }
+  );
+
+  return response.data;
+};
+
+export const getCart = async () => {
+
+  const token = localStorage.getItem("token");
+
+  const response = await axios.get(
+    API_URL,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
       },
     }
   );
