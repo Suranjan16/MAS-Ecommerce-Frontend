@@ -27,6 +27,7 @@ function Cart() {
     };
 
     if (!cart) {
+
         return <h2>Loading Cart...</h2>;
     }
 
@@ -38,7 +39,7 @@ function Cart() {
             {
                 cart.items.map((item) => (
 
-                    <div key={item.id}>
+                    <div key={item.productName}>
 
                         <h3>
                             {item.productName}
@@ -59,7 +60,7 @@ function Cart() {
             }
 
             <h2>
-                Total: ₹{cart.totalPrice}
+                Total: ₹{cart.totalAmount}
             </h2>
 
         </div>
