@@ -1,31 +1,96 @@
+import { useState } from "react";
+
+import { useNavigate } from "react-router-dom";
+
+import { loginUser } from "../services/authService";
+
 function Login() {
-  return (
-    <div>
-      <h1>Login Page</h1>
 
-      <form>
+    const [email, setEmail] = useState("");
+
+    const [password, setPassword] = useState("");
+
+    const navigate = useNavigate();
+
+    const handleLogin = async (e) => {
+
+        e.preventDefault();
+
+        try {
+
+            const data = await loginUser(
+                email,
+                password
+            );
+
+            localStorage.setItem(
+                "token",
+                data.token
+            );
+
+            alert("Login successful");
+
+            navigate("/home");
+
+        } catch (error) {
+
+            console.log(error);
+
+            alert("Invalid email or password");
+        }
+    };
+
+    return (
         <div>
-          <label>Email</label>
-          <br />
-          <input type="email" />
+
+            <h1>Login Page</h1>
+
+            <form onSubmit={handleLogin}>
+
+                <div>
+
+                    <label>Email</label>
+
+                    <br />
+
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) =>
+                            setEmail(e.target.value)
+                        }
+                    />
+
+                </div>
+
+                <br />
+
+                <div>
+
+                    <label>Password</label>
+
+                    <br />
+
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={(e) =>
+                            setPassword(e.target.value)
+                        }
+                    />
+
+                </div>
+
+                <br />
+
+                <button type="submit">
+                    Login
+                </button>
+
+            </form>
+
         </div>
-
-        <br />
-
-        <div>
-          <label>Password</label>
-          <br />
-          <input type="password" />
-        </div>
-
-        <br />
-
-        <button type="submit">
-          Login
-        </button>
-      </form>
-    </div>
-  );
+    );
 }
 
 export default Login;

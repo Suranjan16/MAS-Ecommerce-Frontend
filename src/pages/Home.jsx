@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 
 import { getAllProducts } from "../services/productService";
 
+import { addProductToCart } from "../services/cartService";
+
 function Home() {
 
     const [products, setProducts] = useState([]);
@@ -26,6 +28,38 @@ function Home() {
         }
     };
 
+    const addToCart = async (productId) => {
+
+        try {
+
+            const response = await addProductToCart(
+                productId,
+                1
+            );
+
+            alert(response);
+
+        } catch (error) {
+
+            console.log(
+                "Add to cart error:",
+                error
+            );
+
+            console.log(
+                "Status:",
+                error.response?.status
+            );
+
+            console.log(
+                "Data:",
+                error.response?.data
+            );
+
+            alert("Add to cart failed");
+        }
+    };
+
     return (
         <div>
 
@@ -38,9 +72,25 @@ function Home() {
 
                     <div key={product.id}>
 
+                        <img
+                            src="https://via.placeholder.com/200"
+                            alt={product.name}
+                            width="200"
+                        />
+
                         <h3>{product.name}</h3>
 
-                        <p>Price: ₹{product.price}</p>
+                        <p>
+                            Price: ₹{product.price}
+                        </p>
+
+                        <button
+                            onClick={() =>
+                                addToCart(product.id)
+                            }
+                        >
+                            Add to Cart
+                        </button>
 
                         <hr />
 
