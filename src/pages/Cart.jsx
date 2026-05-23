@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 
-import { getCart } from "../services/cartService";
+import {
+    getCart,
+    removeProductFromCart
+} from "../services/cartService";
 
 function Cart() {
 
@@ -26,6 +29,27 @@ function Cart() {
         }
     };
 
+    const removeItem = async (productId) => {
+
+        try {
+
+            const response =
+                await removeProductFromCart(
+                    productId
+                );
+
+            alert(response);
+
+            fetchCart();
+
+        } catch (error) {
+
+            console.log(error);
+
+            alert("Failed to remove item");
+        }
+    };
+
     if (!cart) {
 
         return <h2>Loading Cart...</h2>;
@@ -39,7 +63,7 @@ function Cart() {
             {
                 cart.items.map((item) => (
 
-                    <div key={item.productName}>
+                    <div key={item.productId}>
 
                         <h3>
                             {item.productName}
@@ -52,6 +76,16 @@ function Cart() {
                         <p>
                             Price: ₹{item.price}
                         </p>
+
+                        <button
+                            onClick={() =>
+                                removeItem(
+                                    item.productId
+                                )
+                            }
+                        >
+                            Remove
+                        </button>
 
                         <hr />
 

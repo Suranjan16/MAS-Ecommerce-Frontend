@@ -41,3 +41,18 @@ export const getCart = async () => {
 
   return response.data;
 };
+
+export const removeProductFromCart = async (productId) => {
+  const token = localStorage.getItem("token");
+
+  const response = await axios.delete(
+    `${API_URL}/remove/${productId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response.data;
+};
