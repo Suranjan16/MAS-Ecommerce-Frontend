@@ -56,3 +56,19 @@ export const removeProductFromCart = async (productId) => {
 
   return response.data;
 };
+
+export const updateCartQuantity = async (productId, quantity) => {
+  const token = localStorage.getItem("token");
+
+  const response = await axios.put(
+    `${API_URL}/update/${productId}?quantity=${quantity}`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response.data;
+};

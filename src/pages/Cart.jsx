@@ -5,6 +5,12 @@ import {
     removeProductFromCart
 } from "../services/cartService";
 
+import {
+  getCart,
+  removeProductFromCart,
+  updateCartQuantity
+} from "../services/cartService";
+
 function Cart() {
 
     const [cart, setCart] = useState(null);
@@ -50,6 +56,19 @@ function Cart() {
         }
     };
 
+    const updateQuantity = async (productId, quantity) => {
+        try {
+            const response = await updateCartQuantity(productId, quantity);
+
+            alert(response);
+
+            fetchCart();
+        } catch (error) {
+            console.log(error);
+            alert("Failed to update quantity");
+        }
+    };
+
     if (!cart) {
 
         return <h2>Loading Cart...</h2>;
@@ -85,6 +104,23 @@ function Cart() {
                             }
                         >
                             Remove
+                        </button>
+
+                        <button
+                            onClick={() =>
+                                updateQuantity(item.productId, item.quantity + 1)
+                            }
+                            >
+                            +
+                        </button>
+
+                        <button
+                            disabled={item.quantity <= 1}
+                            onClick={() =>
+                                updateQuantity(item.productId, item.quantity - 1)
+                            }
+                            >
+                            -
                         </button>
 
                         <hr />
