@@ -6,23 +6,47 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
 
 function App() {
+
     return (
         <BrowserRouter>
 
             <Navbar />
 
             <Routes>
-                <Route path="/" element={<Home />} />
 
-                <Route path="/home" element={<Home />} />
+                <Route
+                    path="/"
+                    element={<Home />}
+                />
 
-                <Route path="/login" element={<Login />} />
+                <Route
+                    path="/home"
+                    element={<Home />}
+                />
 
-                <Route path="/signup" element={<Signup />} />
+                <Route
+                    path="/login"
+                    element={<Login />}
+                />
 
-                <Route path="/cart" element={<Cart />} />
+                <Route
+                    path="/signup"
+                    element={<Signup />}
+                />
+
+                <Route
+                    path="/cart"
+                    element={<Cart />}
+                />
+
+                <Route
+                    path="/checkout"
+                    element={<Checkout />}
+                />
+
             </Routes>
 
         </BrowserRouter>
