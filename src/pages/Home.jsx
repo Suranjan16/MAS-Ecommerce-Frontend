@@ -20,6 +20,11 @@ function Home() {
 
             const data = await getAllProducts();
 
+            console.log(
+                "Products from backend:",
+                data
+            );
+
             setProducts(data);
 
         } catch (error) {
@@ -73,15 +78,33 @@ function Home() {
                     <div key={product.id}>
 
                         <img
-                            src="https://via.placeholder.com/200"
+                            src={
+                                product.imageUrl
+                                    || "https://placehold.co/200x200"
+                            }
                             alt={product.name}
                             width="200"
+                            onError={(e) => {
+                                e.target.src =
+                                    "https://placehold.co/200x200";
+                            }}
                         />
 
-                        <h3>{product.name}</h3>
+                        <h3>
+                            {product.name}
+                        </h3>
+
+                        <p>
+                            Category:
+                            {product.category}
+                        </p>
 
                         <p>
                             Price: ₹{product.price}
+                        </p>
+
+                        <p>
+                            Stock: {product.quantity}
                         </p>
 
                         <button
