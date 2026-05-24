@@ -4,25 +4,32 @@ import { useNavigate } from "react-router-dom";
 import { placeOrder } from "../services/orderService";
 
 function Checkout() {
+
     const [paymentMethod, setPaymentMethod] = useState("COD");
 
     const navigate = useNavigate();
 
     const handlePlaceOrder = async () => {
+
         try {
+
             const response = await placeOrder(paymentMethod);
 
             alert(response);
 
-            navigate("/home");
+            navigate("/cart");
+
         } catch (error) {
+
             console.log(error);
+
             alert("Failed to place order");
         }
     };
 
     return (
         <div>
+
             <h1>Checkout</h1>
 
             <h3>Select Payment Method</h3>
@@ -32,7 +39,9 @@ function Checkout() {
                     type="radio"
                     value="COD"
                     checked={paymentMethod === "COD"}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    onChange={(e) =>
+                        setPaymentMethod(e.target.value)
+                    }
                 />
                 Cash on Delivery
             </label>
@@ -44,7 +53,9 @@ function Checkout() {
                     type="radio"
                     value="RAZORPAY"
                     checked={paymentMethod === "RAZORPAY"}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    onChange={(e) =>
+                        setPaymentMethod(e.target.value)
+                    }
                 />
                 Razorpay
             </label>
@@ -55,6 +66,7 @@ function Checkout() {
             <button onClick={handlePlaceOrder}>
                 Place Order
             </button>
+
         </div>
     );
 }
