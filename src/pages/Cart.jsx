@@ -95,6 +95,19 @@ function Cart() {
 
                     <div key={item.productId}>
 
+                        <img
+                            src={
+                                item.imageUrl
+                                || "https://placehold.co/150x150"
+                            }
+                            alt={item.productName}
+                            width="150"
+                            onError={(e) => {
+                                e.target.src =
+                                    "https://placehold.co/150x150";
+                            }}
+                        />
+
                         <h3>
                             {item.productName}
                         </h3>
