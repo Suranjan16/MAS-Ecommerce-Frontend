@@ -30,3 +30,19 @@ export const getOrders = async () => {
 
     return response.data;
 };
+
+export const cancelOrder = async (orderId) => {
+    const token = localStorage.getItem("token");
+
+    const response = await axios.put(
+        `${API_URL}/cancel/${orderId}`,
+        {},
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+
+    return response.data;
+};
