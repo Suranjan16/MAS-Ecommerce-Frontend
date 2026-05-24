@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { placeOrder } from "../services/orderService";
+
 import {
     createPayment,
     verifyPayment
@@ -17,9 +18,11 @@ function Checkout() {
 
         try {
 
-            const response = await placeOrder(paymentMethod);
+            const orderResponse = await placeOrder(paymentMethod);
 
-            alert(response);
+            alert(orderResponse.message);
+
+            const orderId = orderResponse.orderId;
 
             if (paymentMethod === "COD") {
 
@@ -28,13 +31,52 @@ function Checkout() {
                 return;
             }
 
-            alert("Order placed. Razorpay payment will be added next.");
+            const paymentResponse = await createPayment(orderId);
 
-            navigate("/orders");
+            const options = {
+                key: "rzp_test_Ss7dVslfyOs2t0",
+                amount: paymentResponse.amount,
+                currency: paymentResponse.currency,
+                name: "MAS Ecommerce",
+                description: "Order Payment",
+                order_id: paymentResponse.orderId,
+
+                handler: async function (response) {
+
+                    console.log(
+                        "Razorpay Response:",
+                        response
+                    );
+
+                    await verifyPayment(
+                        orderId,
+                        response.razorpay_payment_id
+                    );
+
+                    alert("Payment successful");
+
+                    navigate("/orders");
+                },
+
+                prefill: {
+                    name: "Suranjan",
+                    email: "test@example.com"
+                },
+
+                theme: {
+                    color: "#3399cc"
+                }
+            };
+
+            const razorpay = new window.Razorpay(options);
+
+            razorpay.open();
 
         } catch (error) {
 
-            console.log(error);
+            console.log("Checkout error:", error);
+            console.log("Status:", error.response?.status);
+            console.log("Data:", error.response?.data);
 
             alert("Failed to place order");
         }
