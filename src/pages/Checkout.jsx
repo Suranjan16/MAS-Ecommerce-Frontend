@@ -2,6 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { placeOrder } from "../services/orderService";
+import {
+    createPayment,
+    verifyPayment
+} from "../services/paymentService";
 
 function Checkout() {
 
@@ -17,7 +21,16 @@ function Checkout() {
 
             alert(response);
 
-            navigate("/cart");
+            if (paymentMethod === "COD") {
+
+                navigate("/orders");
+
+                return;
+            }
+
+            alert("Order placed. Razorpay payment will be added next.");
+
+            navigate("/orders");
 
         } catch (error) {
 
