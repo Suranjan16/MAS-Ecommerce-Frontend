@@ -9,145 +9,218 @@ import {
 import { toast } from "react-toastify";
 
 function AdminDashboard() {
-    const [products, setProducts] = useState([]);
 
-    const navigate = useNavigate();
+    const [products, setProducts] =
+        useState([]);
+
+    const navigate =
+        useNavigate();
 
     useEffect(() => {
         fetchProducts();
     }, []);
 
-    const fetchProducts = async () => {
+    const fetchProducts =
+        async () => {
+
         try {
-            const data = await getAllProducts();
+
+            const data =
+                await getAllProducts();
+
             setProducts(data);
+
         } catch (error) {
+
             console.log(error);
+
+            toast.error(
+                "Failed to load products"
+            );
         }
     };
 
-    const handleDelete = async (productId) => {
-        const confirmDelete = window.confirm(
-            "Are you sure you want to delete this product?"
-        );
-
-        if (!confirmDelete) return;
+    const handleDelete =
+        async (productId) => {
 
         try {
-            const response = await deleteProduct(productId);
+
+            const response =
+                await deleteProduct(productId);
+
             toast.success(response);
+
             fetchProducts();
+
         } catch (error) {
+
             console.log(error);
-            toast.error("This product cannot be deleted because it is linked to cart or orders");
+
+            toast.error(
+                "This product cannot be deleted because it is linked to cart or orders"
+            );
         }
     };
 
     return (
         <div style={pageStyle}>
+
             <div style={headerStyle}>
+
                 <div>
-                    <h1 style={titleStyle}>Admin Dashboard</h1>
+
+                    <h1 style={titleStyle}>
+                        Admin Dashboard
+                    </h1>
+
                     <p style={subtitleStyle}>
                         Manage products, stock, pricing and images
                     </p>
+
                 </div>
 
                 <button
-                    onClick={() => navigate("/admin/add-product")}
+                    onClick={() =>
+                        navigate("/admin/add-product")
+                    }
                     style={addButtonStyle}
                 >
                     + Add Product
                 </button>
+
             </div>
 
             <div style={tableContainerStyle}>
+
                 <table style={tableStyle}>
+
                     <thead>
+
                         <tr>
-                            <th style={thStyle}>Image</th>
-                            <th style={thStyle}>Product</th>
-                            <th style={thStyle}>Category</th>
-                            <th style={thStyle}>Price</th>
-                            <th style={thStyle}>Stock</th>
-                            <th style={thStyle}>Actions</th>
+
+                            <th style={thStyle}>
+                                Image
+                            </th>
+
+                            <th style={thStyle}>
+                                Product
+                            </th>
+
+                            <th style={thStyle}>
+                                Category
+                            </th>
+
+                            <th style={thStyle}>
+                                Price
+                            </th>
+
+                            <th style={thStyle}>
+                                Stock
+                            </th>
+
+                            <th style={thStyle}>
+                                Actions
+                            </th>
+
                         </tr>
+
                     </thead>
 
                     <tbody>
-                        {products.map((product) => (
-                            <tr key={product.id}>
-                                <td style={tdStyle}>
-                                    <img
-                                        src={
-                                            product.imageUrl ||
-                                            "https://placehold.co/80x80"
-                                        }
-                                        alt={product.name}
-                                        style={imageStyle}
-                                        onError={(e) => {
-                                            e.target.src =
+
+                        {
+                            products.map(
+                                (product) => (
+
+                                <tr key={product.id}>
+
+                                    <td style={tdStyle}>
+
+                                        <img
+                                            src={
+                                                product.imageUrl ||
+                                                "https://placehold.co/80x80"
+                                            }
+                                            alt={product.name}
+                                            style={imageStyle}
+                                            onError={(e) => {
+                                                e.target.src =
                                                 "https://placehold.co/80x80";
-                                        }}
-                                    />
-                                </td>
+                                            }}
+                                        />
 
-                                <td style={tdStyle}>
-                                    <strong>{product.name}</strong>
-                                </td>
+                                    </td>
 
-                                <td style={tdStyle}>
-                                    {product.category}
-                                </td>
+                                    <td style={tdStyle}>
 
-                                <td style={tdStyle}>
-                                    ₹{product.price}
-                                </td>
+                                        <strong>
+                                            {product.name}
+                                        </strong>
 
-                                <td style={tdStyle}>
-                                    <span
-                                        style={{
-                                            ...stockBadgeStyle,
-                                            backgroundColor:
-                                                product.quantity > 0
-                                                    ? "#dcfce7"
-                                                    : "#fee2e2",
-                                            color:
-                                                product.quantity > 0
-                                                    ? "#166534"
-                                                    : "#991b1b"
-                                        }}
-                                    >
-                                        {product.quantity}
-                                    </span>
-                                </td>
+                                    </td>
 
-                                <td style={tdStyle}>
-                                    <button
-                                        onClick={() =>
-                                            navigate(
-                                                `/admin/update-product/${product.id}`
-                                            )
-                                        }
-                                        style={editButtonStyle}
-                                    >
-                                        Edit
-                                    </button>
+                                    <td style={tdStyle}>
+                                        {product.category}
+                                    </td>
 
-                                    <button
-                                        onClick={() =>
-                                            handleDelete(product.id)
-                                        }
-                                        style={deleteButtonStyle}
-                                    >
-                                        Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
+                                    <td style={tdStyle}>
+                                        ₹{product.price}
+                                    </td>
+
+                                    <td style={tdStyle}>
+
+                                        <span
+                                            style={{
+                                                ...stockBadgeStyle,
+                                                backgroundColor:
+                                                    product.quantity > 0
+                                                        ? "#dcfce7"
+                                                        : "#fee2e2",
+                                                color:
+                                                    product.quantity > 0
+                                                        ? "#166534"
+                                                        : "#991b1b"
+                                            }}
+                                        >
+                                            {product.quantity}
+                                        </span>
+
+                                    </td>
+
+                                    <td style={tdStyle}>
+
+                                        <button
+                                            onClick={() =>
+                                                navigate(
+                                                    `/admin/update-product/${product.id}`
+                                                )
+                                            }
+                                            style={editButtonStyle}
+                                        >
+                                            Edit
+                                        </button>
+
+                                        <button
+                                            onClick={() =>
+                                                handleDelete(product.id)
+                                            }
+                                            style={deleteButtonStyle}
+                                        >
+                                            Delete
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+                            ))
+                        }
+
                     </tbody>
+
                 </table>
+
             </div>
+
         </div>
     );
 }
@@ -189,7 +262,8 @@ const addButtonStyle = {
 const tableContainerStyle = {
     backgroundColor: "white",
     borderRadius: "12px",
-    boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
+    boxShadow:
+        "0 2px 12px rgba(0,0,0,0.08)",
     overflow: "hidden"
 };
 
