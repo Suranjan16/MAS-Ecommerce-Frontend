@@ -20,7 +20,9 @@ export const createPayment = async (orderId) => {
 
 export const verifyPayment = async (
     orderId,
-    razorpayPaymentId
+    razorpayPaymentId,
+    razorpayOrderId,
+    razorpaySignature
 ) => {
     const token = localStorage.getItem("token");
 
@@ -29,6 +31,8 @@ export const verifyPayment = async (
         {
             orderId,
             razorpayPaymentId,
+            razorpayOrderId,
+            razorpaySignature,
         },
         {
             headers: {

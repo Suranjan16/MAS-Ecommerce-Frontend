@@ -50,7 +50,9 @@ function Checkout() {
 
                     await verifyPayment(
                         orderId,
-                        response.razorpay_payment_id
+                        response.razorpay_payment_id,
+                        response.razorpay_order_id,
+                        response.razorpay_signature
                     );
 
                     alert("Payment successful");
