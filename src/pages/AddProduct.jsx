@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 import { useNavigate } from "react-router-dom";
 
 import { addProduct } from "../services/productService";
@@ -7,25 +6,18 @@ import { addProduct } from "../services/productService";
 import { toast } from "react-toastify";
 
 function AddProduct() {
-
     const [name, setName] = useState("");
-
     const [category, setCategory] = useState("");
-
     const [price, setPrice] = useState("");
-
     const [quantity, setQuantity] = useState("");
-
     const [imageUrl, setImageUrl] = useState("");
 
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
-
         e.preventDefault();
 
         try {
-
             const product = {
                 name,
                 category,
@@ -39,9 +31,7 @@ function AddProduct() {
             toast.success("Product added successfully");
 
             navigate("/admin");
-
         } catch (error) {
-
             console.log(error);
 
             toast.error("Failed to add product");
@@ -49,80 +39,209 @@ function AddProduct() {
     };
 
     return (
-        <div>
+        <div style={pageStyle}>
+            <div style={cardStyle}>
+                <h1 style={titleStyle}>Add Product</h1>
 
-            <h1>Add Product</h1>
+                <p style={subtitleStyle}>
+                    Add a new product to your store
+                </p>
 
-            <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit}>
+                    <div style={fieldStyle}>
+                        <label style={labelStyle}>Product Name</label>
+                        <input
+                            type="text"
+                            placeholder="Enter product name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            style={inputStyle}
+                            required
+                        />
+                    </div>
 
-                <input
-                    type="text"
-                    placeholder="Product Name"
-                    value={name}
-                    onChange={(e) =>
-                        setName(e.target.value)
-                    }
-                />
+                    <div style={fieldStyle}>
+                        <label style={labelStyle}>Category</label>
+                        <input
+                            type="text"
+                            placeholder="Enter category"
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value)}
+                            style={inputStyle}
+                            required
+                        />
+                    </div>
 
-                <br />
-                <br />
+                    <div style={rowStyle}>
+                        <div style={fieldStyle}>
+                            <label style={labelStyle}>Price</label>
+                            <input
+                                type="number"
+                                placeholder="Price"
+                                value={price}
+                                onChange={(e) => setPrice(e.target.value)}
+                                style={inputStyle}
+                                required
+                            />
+                        </div>
 
-                <input
-                    type="text"
-                    placeholder="Category"
-                    value={category}
-                    onChange={(e) =>
-                        setCategory(e.target.value)
-                    }
-                />
+                        <div style={fieldStyle}>
+                            <label style={labelStyle}>Quantity</label>
+                            <input
+                                type="number"
+                                placeholder="Quantity"
+                                value={quantity}
+                                onChange={(e) => setQuantity(e.target.value)}
+                                style={inputStyle}
+                                required
+                            />
+                        </div>
+                    </div>
 
-                <br />
-                <br />
+                    <div style={fieldStyle}>
+                        <label style={labelStyle}>Image URL</label>
+                        <input
+                            type="text"
+                            placeholder="Paste product image URL"
+                            value={imageUrl}
+                            onChange={(e) => setImageUrl(e.target.value)}
+                            style={inputStyle}
+                        />
+                    </div>
 
-                <input
-                    type="number"
-                    placeholder="Price"
-                    value={price}
-                    onChange={(e) =>
-                        setPrice(e.target.value)
-                    }
-                />
+                    {imageUrl && (
+                        <div style={previewBoxStyle}>
+                            <p style={previewTextStyle}>
+                                Image Preview
+                            </p>
 
-                <br />
-                <br />
+                            <img
+                                src={imageUrl}
+                                alt="Product preview"
+                                style={previewImageStyle}
+                                onError={(e) => {
+                                    e.target.src =
+                                        "https://placehold.co/200x200";
+                                }}
+                            />
+                        </div>
+                    )}
 
-                <input
-                    type="number"
-                    placeholder="Quantity"
-                    value={quantity}
-                    onChange={(e) =>
-                        setQuantity(e.target.value)
-                    }
-                />
+                    <button type="submit" style={buttonStyle}>
+                        Add Product
+                    </button>
 
-                <br />
-                <br />
-
-                <input
-                    type="text"
-                    placeholder="Image URL"
-                    value={imageUrl}
-                    onChange={(e) =>
-                        setImageUrl(e.target.value)
-                    }
-                />
-
-                <br />
-                <br />
-
-                <button type="submit">
-                    Add Product
-                </button>
-
-            </form>
-
+                    <button
+                        type="button"
+                        onClick={() => navigate("/admin")}
+                        style={backButtonStyle}
+                    >
+                        Back to Dashboard
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }
+
+const pageStyle = {
+    padding: "20px",
+    paddingTop: "90px",
+    minHeight: "100vh",
+    backgroundColor: "#f9fafb",
+    display: "flex",
+    justifyContent: "center"
+};
+
+const cardStyle = {
+    width: "520px",
+    padding: "30px",
+    backgroundColor: "white",
+    borderRadius: "14px",
+    boxShadow: "0 2px 14px rgba(0,0,0,0.12)"
+};
+
+const titleStyle = {
+    margin: 0,
+    color: "#111827",
+    textAlign: "center"
+};
+
+const subtitleStyle = {
+    color: "#6b7280",
+    textAlign: "center",
+    marginBottom: "25px"
+};
+
+const fieldStyle = {
+    width: "100%",
+    marginBottom: "18px"
+};
+
+const rowStyle = {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: "15px"
+};
+
+const labelStyle = {
+    display: "block",
+    marginBottom: "6px",
+    fontWeight: "600",
+    color: "#374151"
+};
+
+const inputStyle = {
+    width: "100%",
+    padding: "11px",
+    border: "1px solid #d1d5db",
+    borderRadius: "8px",
+    fontSize: "15px",
+    boxSizing: "border-box"
+};
+
+const previewBoxStyle = {
+    marginBottom: "18px",
+    padding: "15px",
+    backgroundColor: "#f3f4f6",
+    borderRadius: "10px",
+    textAlign: "center"
+};
+
+const previewTextStyle = {
+    marginTop: 0,
+    color: "#374151",
+    fontWeight: "600"
+};
+
+const previewImageStyle = {
+    width: "180px",
+    height: "180px",
+    objectFit: "cover",
+    borderRadius: "10px"
+};
+
+const buttonStyle = {
+    width: "100%",
+    padding: "12px",
+    border: "none",
+    backgroundColor: "#2563eb",
+    color: "white",
+    borderRadius: "8px",
+    fontSize: "16px",
+    fontWeight: "bold",
+    cursor: "pointer"
+};
+
+const backButtonStyle = {
+    width: "100%",
+    padding: "11px",
+    marginTop: "12px",
+    border: "1px solid #d1d5db",
+    backgroundColor: "white",
+    color: "#374151",
+    borderRadius: "8px",
+    cursor: "pointer"
+};
 
 export default AddProduct;
