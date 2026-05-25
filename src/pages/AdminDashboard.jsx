@@ -6,6 +6,8 @@ import {
     deleteProduct
 } from "../services/productService";
 
+import { toast } from "react-toastify";
+
 function AdminDashboard() {
     const [products, setProducts] = useState([]);
 
@@ -33,11 +35,11 @@ function AdminDashboard() {
 
         try {
             const response = await deleteProduct(productId);
-            alert(response);
+            toast.success(response);
             fetchProducts();
         } catch (error) {
             console.log(error);
-            alert("This product cannot be deleted because it is linked to cart or orders");
+            toast.error("This product cannot be deleted because it is linked to cart or orders");
         }
     };
 

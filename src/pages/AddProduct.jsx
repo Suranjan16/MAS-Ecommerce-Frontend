@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 
 import { addProduct } from "../services/productService";
 
+import { toast } from "react-toastify";
+
 function AddProduct() {
 
     const [name, setName] = useState("");
@@ -34,7 +36,7 @@ function AddProduct() {
 
             await addProduct(product);
 
-            alert("Product added successfully");
+            toast.success("Product added successfully");
 
             navigate("/admin");
 
@@ -42,7 +44,7 @@ function AddProduct() {
 
             console.log(error);
 
-            alert("Failed to add product");
+            toast.error("Failed to add product");
         }
     };
 

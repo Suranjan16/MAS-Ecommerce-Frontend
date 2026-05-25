@@ -8,6 +8,8 @@ import {
     verifyPayment
 } from "../services/paymentService";
 
+import { toast } from "react-toastify";
+
 function Checkout() {
 
     const [paymentMethod, setPaymentMethod] = useState("COD");
@@ -21,7 +23,7 @@ function Checkout() {
         try {
             const orderResponse = await placeOrder(paymentMethod);
 
-            alert(orderResponse.message);
+            toast.success(orderResponse.message);
 
             const orderId = orderResponse.orderId;
 
@@ -50,7 +52,7 @@ function Checkout() {
                         response.razorpay_signature
                     );
 
-                    alert("Payment successful");
+                    toast.success("Payment successful");
 
                     navigate("/orders");
                 },
@@ -74,7 +76,7 @@ function Checkout() {
             console.log("Status:", error.response?.status);
             console.log("Data:", error.response?.data);
 
-            alert("Failed to place order");
+            toast.error("Failed to place order");
         } finally {
             setLoading(false);
         }

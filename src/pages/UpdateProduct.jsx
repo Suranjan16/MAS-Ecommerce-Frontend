@@ -6,6 +6,8 @@ import {
     updateProduct
 } from "../services/productService";
 
+import { toast } from "react-toastify";
+
 function UpdateProduct() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -44,13 +46,13 @@ function UpdateProduct() {
         try {
             await updateProduct(id, product);
 
-            alert("Product updated successfully");
+            toast.success("Product updated successfully");
 
             navigate("/admin");
         } catch (error) {
             console.log(error);
 
-            alert("Failed to update product");
+            toast.error("Failed to update product");
         }
     };
 

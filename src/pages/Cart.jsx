@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -8,8 +7,9 @@ import {
     updateCartQuantity
 } from "../services/cartService";
 
-function Cart() {
+import { toast } from "react-toastify";
 
+function Cart() {
     const [cart, setCart] = useState(null);
 
     const navigate = useNavigate();
@@ -21,7 +21,6 @@ function Cart() {
     const fetchCart = async () => {
         try {
             const data = await getCart();
-
             setCart(data);
         } catch (error) {
             console.log(error);
@@ -33,13 +32,13 @@ function Cart() {
             const response =
                 await removeProductFromCart(productId);
 
-            alert(response);
+            toast.success(response);
 
             fetchCart();
         } catch (error) {
             console.log(error);
 
-            alert("Failed to remove item");
+            toast.error("Failed to remove item");
         }
     };
 
@@ -54,13 +53,13 @@ function Cart() {
                     quantity
                 );
 
-            alert(response);
+            toast.success(response);
 
             fetchCart();
         } catch (error) {
             console.log(error);
 
-            alert("Failed to update quantity");
+            toast.error("Failed to update quantity");
         }
     };
 
@@ -97,96 +96,83 @@ function Cart() {
 
     return (
         <div style={pageStyle}>
-
             <h1>My Cart</h1>
 
             <div style={cartLayoutStyle}>
-
                 <div style={itemsContainerStyle}>
-                    {
-                        cart.items.map((item) => (
+                    {cart.items.map((item) => (
+                        <div
+                            key={item.productId}
+                            style={cartItemStyle}
+                        >
+                            <img
+                                src={
+                                    item.imageUrl ||
+                                    "https://placehold.co/150x150"
+                                }
+                                alt={item.productName}
+                                style={imageStyle}
+                                onError={(e) => {
+                                    e.target.src =
+                                        "https://placehold.co/150x150";
+                                }}
+                            />
 
-                            <div
-                                key={item.productId}
-                                style={cartItemStyle}
-                            >
+                            <div style={itemDetailsStyle}>
+                                <h3>{item.productName}</h3>
 
-                                <img
-                                    src={
-                                        item.imageUrl ||
-                                        "https://placehold.co/150x150"
-                                    }
-                                    alt={item.productName}
-                                    style={imageStyle}
-                                    onError={(e) => {
-                                        e.target.src =
-                                            "https://placehold.co/150x150";
-                                    }}
-                                />
+                                <p>Price: ₹{item.price}</p>
 
-                                <div style={itemDetailsStyle}>
-                                    <h3>{item.productName}</h3>
+                                <div style={quantityBoxStyle}>
+                                    <button
+                                        disabled={item.quantity <= 1}
+                                        onClick={() =>
+                                            updateQuantity(
+                                                item.productId,
+                                                item.quantity - 1
+                                            )
+                                        }
+                                        style={quantityButtonStyle}
+                                    >
+                                        -
+                                    </button>
 
-                                    <p>
-                                        Price: ₹{item.price}
-                                    </p>
-
-                                    <div style={quantityBoxStyle}>
-                                        <button
-                                            disabled={item.quantity <= 1}
-                                            onClick={() =>
-                                                updateQuantity(
-                                                    item.productId,
-                                                    item.quantity - 1
-                                                )
-                                            }
-                                            style={quantityButtonStyle}
-                                        >
-                                            -
-                                        </button>
-
-                                        <span style={quantityTextStyle}>
-                                            {item.quantity}
-                                        </span>
-
-                                        <button
-                                            onClick={() =>
-                                                updateQuantity(
-                                                    item.productId,
-                                                    item.quantity + 1
-                                                )
-                                            }
-                                            style={quantityButtonStyle}
-                                        >
-                                            +
-                                        </button>
-                                    </div>
+                                    <span style={quantityTextStyle}>
+                                        {item.quantity}
+                                    </span>
 
                                     <button
                                         onClick={() =>
-                                            removeItem(item.productId)
+                                            updateQuantity(
+                                                item.productId,
+                                                item.quantity + 1
+                                            )
                                         }
-                                        style={removeButtonStyle}
+                                        style={quantityButtonStyle}
                                     >
-                                        Remove
+                                        +
                                     </button>
                                 </div>
 
+                                <button
+                                    onClick={() =>
+                                        removeItem(item.productId)
+                                    }
+                                    style={removeButtonStyle}
+                                >
+                                    Remove
+                                </button>
                             </div>
-                        ))
-                    }
+                        </div>
+                    ))}
                 </div>
 
                 <div style={summaryStyle}>
                     <h2>Order Summary</h2>
 
-                    <p>
-                        Items: {cart.items.length}
-                    </p>
+                    <p>Items: {cart.items.length}</p>
 
-                    <h3>
-                        Total: ₹{cart.totalAmount}
-                    </h3>
+                    <h3>Total: ₹{cart.totalAmount}</h3>
 
                     <button
                         onClick={() => navigate("/checkout")}
@@ -195,9 +181,7 @@ function Cart() {
                         Proceed to Checkout
                     </button>
                 </div>
-
             </div>
-
         </div>
     );
 }

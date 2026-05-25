@@ -5,6 +5,8 @@ import {
     cancelOrder
 } from "../services/orderService";
 
+import { toast } from "react-toastify";
+
 function Orders() {
     const [orders, setOrders] = useState([]);
 
@@ -24,11 +26,11 @@ function Orders() {
     const handleCancelOrder = async (orderId) => {
         try {
             const response = await cancelOrder(orderId);
-            alert(response);
+            toast.success(response);
             fetchOrders();
         } catch (error) {
             console.log(error);
-            alert("Failed to cancel order");
+            toast.error("Failed to cancel order");
         }
     };
 
