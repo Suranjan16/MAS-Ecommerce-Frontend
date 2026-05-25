@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 
 import {
     getAllProducts,
-    searchProductsByName
+    searchProductsByName,
+    getProductsByCategory
 } from "../services/productService";
 
 import { addProductToCart } from "../services/cartService";
@@ -11,6 +12,8 @@ function Home() {
     const [products, setProducts] = useState([]);
 
     const [searchName, setSearchName] = useState("");
+
+    const [category, setCategory] = useState("");
 
     useEffect(() => {
         fetchProducts();
@@ -34,6 +37,23 @@ function Home() {
             }
 
             const data = await searchProductsByName(searchName);
+
+            setProducts(data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const handleCategoryFilter = async (value) => {
+        setCategory(value);
+
+        try {
+            if (value === "") {
+                fetchProducts();
+                return;
+            }
+
+            const data = await getProductsByCategory(value);
 
             setProducts(data);
         } catch (error) {
@@ -82,11 +102,28 @@ function Home() {
             <button
                 onClick={() => {
                     setSearchName("");
+                    setCategory("");
                     fetchProducts();
                 }}
             >
                 Clear
             </button>
+
+            <br />
+            <br />
+
+            <select
+                value={category}
+                onChange={(e) =>
+                    handleCategoryFilter(e.target.value)
+                }
+            >
+                <option value="">All Categories</option>
+                <option value="Mobile">Mobile</option>
+                <option value="Laptop">Laptop</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Fashion">Fashion</option>
+            </select>
 
             <hr />
 

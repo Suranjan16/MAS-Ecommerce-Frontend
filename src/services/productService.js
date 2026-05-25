@@ -15,6 +15,14 @@ export const searchProductsByName = async (name) => {
     return response.data;
 };
 
+export const getProductsByCategory = async (category) => {
+    const response = await axios.get(
+        `${API_URL}/category/${encodeURIComponent(category)}`
+    );
+
+    return response.data;
+};
+
 export const getProductById = async (productId) => {
     const response = await axios.get(`${API_URL}/${productId}`);
     return response.data;
