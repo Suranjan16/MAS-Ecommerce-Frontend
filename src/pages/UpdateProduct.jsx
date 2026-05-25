@@ -30,6 +30,7 @@ function UpdateProduct() {
             setProduct(data);
         } catch (error) {
             console.log(error);
+            toast.error("Failed to load product");
         }
     };
 
@@ -57,71 +58,214 @@ function UpdateProduct() {
     };
 
     return (
-        <div>
-            <h1>Update Product</h1>
+        <div style={pageStyle}>
+            <div style={cardStyle}>
+                <h1 style={titleStyle}>Update Product</h1>
 
-            <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    name="name"
-                    placeholder="Name"
-                    value={product.name}
-                    onChange={handleChange}
-                />
+                <p style={subtitleStyle}>
+                    Modify product details, stock, price and image
+                </p>
 
-                <br />
-                <br />
+                <form onSubmit={handleSubmit}>
+                    <div style={fieldStyle}>
+                        <label style={labelStyle}>Product Name</label>
+                        <input
+                            type="text"
+                            name="name"
+                            placeholder="Enter product name"
+                            value={product.name}
+                            onChange={handleChange}
+                            style={inputStyle}
+                            required
+                        />
+                    </div>
 
-                <input
-                    type="text"
-                    name="category"
-                    placeholder="Category"
-                    value={product.category}
-                    onChange={handleChange}
-                />
+                    <div style={fieldStyle}>
+                        <label style={labelStyle}>Category</label>
+                        <input
+                            type="text"
+                            name="category"
+                            placeholder="Enter category"
+                            value={product.category}
+                            onChange={handleChange}
+                            style={inputStyle}
+                            required
+                        />
+                    </div>
 
-                <br />
-                <br />
+                    <div style={rowStyle}>
+                        <div style={fieldStyle}>
+                            <label style={labelStyle}>Price</label>
+                            <input
+                                type="number"
+                                name="price"
+                                placeholder="Price"
+                                value={product.price}
+                                onChange={handleChange}
+                                style={inputStyle}
+                                required
+                            />
+                        </div>
 
-                <input
-                    type="number"
-                    name="price"
-                    placeholder="Price"
-                    value={product.price}
-                    onChange={handleChange}
-                />
+                        <div style={fieldStyle}>
+                            <label style={labelStyle}>Quantity</label>
+                            <input
+                                type="number"
+                                name="quantity"
+                                placeholder="Quantity"
+                                value={product.quantity}
+                                onChange={handleChange}
+                                style={inputStyle}
+                                required
+                            />
+                        </div>
+                    </div>
 
-                <br />
-                <br />
+                    <div style={fieldStyle}>
+                        <label style={labelStyle}>Image URL</label>
+                        <input
+                            type="text"
+                            name="imageUrl"
+                            placeholder="Paste product image URL"
+                            value={product.imageUrl || ""}
+                            onChange={handleChange}
+                            style={inputStyle}
+                        />
+                    </div>
 
-                <input
-                    type="number"
-                    name="quantity"
-                    placeholder="Quantity"
-                    value={product.quantity}
-                    onChange={handleChange}
-                />
+                    {product.imageUrl && (
+                        <div style={previewBoxStyle}>
+                            <p style={previewTextStyle}>
+                                Image Preview
+                            </p>
 
-                <br />
-                <br />
+                            <img
+                                src={product.imageUrl}
+                                alt="Product preview"
+                                style={previewImageStyle}
+                                onError={(e) => {
+                                    e.target.src =
+                                        "https://placehold.co/200x200";
+                                }}
+                            />
+                        </div>
+                    )}
 
-                <input
-                    type="text"
-                    name="imageUrl"
-                    placeholder="Image URL"
-                    value={product.imageUrl || ""}
-                    onChange={handleChange}
-                />
+                    <button type="submit" style={buttonStyle}>
+                        Update Product
+                    </button>
 
-                <br />
-                <br />
-
-                <button type="submit">
-                    Update Product
-                </button>
-            </form>
+                    <button
+                        type="button"
+                        onClick={() => navigate("/admin")}
+                        style={backButtonStyle}
+                    >
+                        Back to Dashboard
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }
+
+const pageStyle = {
+    padding: "20px",
+    paddingTop: "90px",
+    minHeight: "100vh",
+    backgroundColor: "#f9fafb",
+    display: "flex",
+    justifyContent: "center"
+};
+
+const cardStyle = {
+    width: "520px",
+    padding: "30px",
+    backgroundColor: "white",
+    borderRadius: "14px",
+    boxShadow: "0 2px 14px rgba(0,0,0,0.12)"
+};
+
+const titleStyle = {
+    margin: 0,
+    color: "#111827",
+    textAlign: "center"
+};
+
+const subtitleStyle = {
+    color: "#6b7280",
+    textAlign: "center",
+    marginBottom: "25px"
+};
+
+const fieldStyle = {
+    width: "100%",
+    marginBottom: "18px"
+};
+
+const rowStyle = {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: "15px"
+};
+
+const labelStyle = {
+    display: "block",
+    marginBottom: "6px",
+    fontWeight: "600",
+    color: "#374151"
+};
+
+const inputStyle = {
+    width: "100%",
+    padding: "11px",
+    border: "1px solid #d1d5db",
+    borderRadius: "8px",
+    fontSize: "15px",
+    boxSizing: "border-box"
+};
+
+const previewBoxStyle = {
+    marginBottom: "18px",
+    padding: "15px",
+    backgroundColor: "#f3f4f6",
+    borderRadius: "10px",
+    textAlign: "center"
+};
+
+const previewTextStyle = {
+    marginTop: 0,
+    color: "#374151",
+    fontWeight: "600"
+};
+
+const previewImageStyle = {
+    width: "180px",
+    height: "180px",
+    objectFit: "cover",
+    borderRadius: "10px"
+};
+
+const buttonStyle = {
+    width: "100%",
+    padding: "12px",
+    border: "none",
+    backgroundColor: "#2563eb",
+    color: "white",
+    borderRadius: "8px",
+    fontSize: "16px",
+    fontWeight: "bold",
+    cursor: "pointer"
+};
+
+const backButtonStyle = {
+    width: "100%",
+    padding: "11px",
+    marginTop: "12px",
+    border: "1px solid #d1d5db",
+    backgroundColor: "white",
+    color: "#374151",
+    borderRadius: "8px",
+    cursor: "pointer"
+};
 
 export default UpdateProduct;
