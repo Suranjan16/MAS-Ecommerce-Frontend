@@ -1,55 +1,161 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+
+import {
+    useNavigate,
+    Link
+} from "react-router-dom";
+
+import {
+    registerUser
+} from "../services/authService";
+
+import { toast } from "react-toastify";
 
 function Signup() {
+
+    const [name, setName] =
+        useState("");
+
+    const [email, setEmail] =
+        useState("");
+
+    const [password, setPassword] =
+        useState("");
+
+    const navigate =
+        useNavigate();
+
+    const handleSignup =
+        async (e) => {
+
+        e.preventDefault();
+
+        try {
+
+            await registerUser({
+                name,
+                email,
+                password
+            });
+
+            toast.success("Signup successful");
+
+            navigate("/login");
+
+        } catch (error) {
+
+            console.log(error);
+
+            toast.success("Signup failed");
+        }
+    };
+
     return (
         <div style={pageStyle}>
+
             <div style={cardStyle}>
-                <h1 style={titleStyle}>Signup</h1>
+
+                <h1 style={titleStyle}>
+                    Signup
+                </h1>
 
                 <p style={subtitleStyle}>
                     Create your MAS account
                 </p>
 
-                <form>
+                <form
+                    onSubmit={
+                        handleSignup
+                    }
+                >
+
                     <div style={fieldStyle}>
-                        <label style={labelStyle}>Name</label>
+
+                        <label style={labelStyle}>
+                            Name
+                        </label>
+
                         <input
                             type="text"
+                            value={name}
+                            onChange={(e) =>
+                                setName(
+                                    e.target.value
+                                )
+                            }
                             placeholder="Enter your name"
                             style={inputStyle}
+                            required
                         />
+
                     </div>
 
                     <div style={fieldStyle}>
-                        <label style={labelStyle}>Email</label>
+
+                        <label style={labelStyle}>
+                            Email
+                        </label>
+
                         <input
                             type="email"
+                            value={email}
+                            onChange={(e) =>
+                                setEmail(
+                                    e.target.value
+                                )
+                            }
                             placeholder="Enter your email"
                             style={inputStyle}
+                            required
                         />
+
                     </div>
 
                     <div style={fieldStyle}>
-                        <label style={labelStyle}>Password</label>
+
+                        <label style={labelStyle}>
+                            Password
+                        </label>
+
                         <input
                             type="password"
+                            value={password}
+                            onChange={(e) =>
+                                setPassword(
+                                    e.target.value
+                                )
+                            }
                             placeholder="Enter your password"
                             style={inputStyle}
+                            required
                         />
+
                     </div>
 
-                    <button type="submit" style={buttonStyle}>
+                    <button
+                        type="submit"
+                        style={buttonStyle}
+                    >
                         Signup
                     </button>
+
                 </form>
 
                 <p style={bottomTextStyle}>
+
                     Already have an account?{" "}
-                    <Link to="/login" style={linkStyle}>
+
+                    <Link
+                        to="/login"
+                        style={linkStyle}
+                    >
                         Login
                     </Link>
+
                 </p>
+
             </div>
+
         </div>
     );
 }
@@ -68,7 +174,8 @@ const cardStyle = {
     padding: "30px",
     borderRadius: "14px",
     backgroundColor: "white",
-    boxShadow: "0 2px 14px rgba(0,0,0,0.12)"
+    boxShadow:
+        "0 2px 14px rgba(0,0,0,0.12)"
 };
 
 const titleStyle = {

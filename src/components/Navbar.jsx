@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function Navbar() {
 
@@ -14,7 +15,7 @@ function Navbar() {
 
         localStorage.removeItem("role");
 
-        alert("Logout successful");
+        toast.success("Logout successful");
 
         navigate("/login");
 

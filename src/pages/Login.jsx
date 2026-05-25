@@ -3,6 +3,8 @@ import { useNavigate, Link } from "react-router-dom";
 
 import { loginUser } from "../services/authService";
 
+import { toast } from "react-toastify";
+
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -18,14 +20,14 @@ function Login() {
             localStorage.setItem("token", data.token);
             localStorage.setItem("role", data.role);
 
-            alert("Login successful");
+            toast.success("Login successful");
 
             navigate("/home");
 
             window.location.reload();
         } catch (error) {
             console.log(error);
-            alert("Invalid email or password");
+            toast.error("Invalid email or password");
         }
     };
 
