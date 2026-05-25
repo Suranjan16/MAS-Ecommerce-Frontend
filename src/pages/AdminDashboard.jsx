@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-
 import { useNavigate } from "react-router-dom";
 
-import { getAllProducts } from "../services/productService";
+import {
+    getAllProducts,
+    deleteProduct
+} from "../services/productService";
 
 function AdminDashboard() {
-
     const [products, setProducts] = useState([]);
 
     const navigate = useNavigate();
@@ -17,16 +18,36 @@ function AdminDashboard() {
     const fetchProducts = async () => {
         try {
             const data = await getAllProducts();
-
             setProducts(data);
         } catch (error) {
             console.log(error);
         }
     };
 
+    const handleDelete = async (productId) => {
+        const confirmDelete = window.confirm(
+            "Are you sure you want to delete this product?"
+        );
+
+        if (!confirmDelete) {
+            return;
+        }
+
+        try {
+            const response = await deleteProduct(productId);
+
+            alert(response);
+
+            fetchProducts();
+        } catch (error) {
+            console.log(error);
+
+            alert("Failed to delete product");
+        }
+    };
+
     return (
         <div>
-
             <h1>Admin Dashboard</h1>
 
             <button
@@ -39,46 +60,50 @@ function AdminDashboard() {
 
             <h2>All Products</h2>
 
-            {
-                products.map((product) => (
+            {products.map((product) => (
+                <div key={product.id}>
+                    <img
+                        src={
+                            product.imageUrl ||
+                            "https://placehold.co/150x150"
+                        }
+                        alt={product.name}
+                        width="150"
+                        onError={(e) => {
+                            e.target.src =
+                                "https://placehold.co/150x150";
+                        }}
+                    />
 
-                    <div key={product.id}>
+                    <h3>{product.name}</h3>
 
-                        <img
-                            src={
-                                product.imageUrl
-                                || "https://placehold.co/150x150"
-                            }
-                            alt={product.name}
-                            width="150"
-                            onError={(e) => {
-                                e.target.src =
-                                    "https://placehold.co/150x150";
-                            }}
-                        />
+                    <p>Category: {product.category}</p>
 
-                        <h3>{product.name}</h3>
+                    <p>Price: ₹{product.price}</p>
 
-                        <p>Category: {product.category}</p>
+                    <p>Stock: {product.quantity}</p>
 
-                        <p>Price: ₹{product.price}</p>
+                    <button
+                        onClick={() =>
+                            navigate(
+                                `/admin/update-product/${product.id}`
+                            )
+                        }
+                    >
+                        Edit
+                    </button>
 
-                        <p>Stock: {product.quantity}</p>
+                    <button
+                        onClick={() =>
+                            handleDelete(product.id)
+                        }
+                    >
+                        Delete
+                    </button>
 
-                        <button>
-                            Edit
-                        </button>
-
-                        <button>
-                            Delete
-                        </button>
-
-                        <hr />
-
-                    </div>
-                ))
-            }
-
+                    <hr />
+                </div>
+            ))}
         </div>
     );
 }

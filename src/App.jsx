@@ -11,6 +11,7 @@ import Checkout from "./pages/Checkout";
 import Orders from "./pages/Orders";
 import AdminDashboard from "./pages/AdminDashboard";
 import AddProduct from "./pages/AddProduct";
+import UpdateProduct from "./pages/UpdateProduct";
 
 function App() {
     return (
@@ -40,6 +41,15 @@ function App() {
                     element={
                         <AdminRoute>
                             <AddProduct />
+                        </AdminRoute>
+                    }
+                />
+
+                <Route
+                    path="/admin/update-product/:id"
+                    element={
+                        <AdminRoute>
+                            <UpdateProduct />
                         </AdminRoute>
                     }
                 />
