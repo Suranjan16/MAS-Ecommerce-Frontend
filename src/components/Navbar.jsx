@@ -22,68 +22,118 @@ function Navbar() {
     };
 
     return (
-        <div>
+        <div
+            style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "15px 30px",
+                backgroundColor: "#111827",
+                color: "white",
+                position: "sticky",
+                top: 0,
+                zIndex: 1000
+            }}
+        >
 
-            <h2>MAS Ecommerce</h2>
+            <h2
+                style={{
+                    margin: 0
+                }}
+            >
+                MAS Ecommerce
+            </h2>
 
-            <Link to="/home">Home</Link>
+            <div
+                style={{
+                    display: "flex",
+                    gap: "20px",
+                    alignItems: "center"
+                }}
+            >
 
-            <br />
+                <Link
+                    to="/home"
+                    style={linkStyle}
+                >
+                    Home
+                </Link>
 
-            {
-                token && (
-                    <>
-                        <Link to="/cart">
-                            Cart
-                        </Link>
+                {
+                    token && (
+                        <>
+                            <Link
+                                to="/cart"
+                                style={linkStyle}
+                            >
+                                Cart
+                            </Link>
 
-                        <br />
+                            <Link
+                                to="/orders"
+                                style={linkStyle}
+                            >
+                                Orders
+                            </Link>
+                        </>
+                    )
+                }
 
-                        <Link to="/orders">
-                            Orders
-                        </Link>
-
-                        <br />
-                    </>
-                )
-            }
-
-            {
-                role === "ADMIN" && (
-                    <>
-                        <Link to="/admin">
+                {
+                    role === "ADMIN" && (
+                        <Link
+                            to="/admin"
+                            style={linkStyle}
+                        >
                             Admin Dashboard
                         </Link>
+                    )
+                }
 
-                        <br />
-                    </>
-                )
-            }
+                {
+                    !token ? (
+                        <>
+                            <Link
+                                to="/login"
+                                style={linkStyle}
+                            >
+                                Login
+                            </Link>
 
-            {
-                !token ? (
-                    <>
-                        <Link to="/login">
-                            Login
-                        </Link>
+                            <Link
+                                to="/signup"
+                                style={linkStyle}
+                            >
+                                Signup
+                            </Link>
+                        </>
+                    ) : (
+                        <button
+                            onClick={handleLogout}
+                            style={{
+                                padding: "8px 14px",
+                                border: "none",
+                                backgroundColor: "#ef4444",
+                                color: "white",
+                                borderRadius: "6px",
+                                cursor: "pointer"
+                            }}
+                        >
+                            Logout
+                        </button>
+                    )
+                }
 
-                        <br />
-
-                        <Link to="/signup">
-                            Signup
-                        </Link>
-                    </>
-                ) : (
-                    <button onClick={handleLogout}>
-                        Logout
-                    </button>
-                )
-            }
-
-            <hr />
+            </div>
 
         </div>
     );
 }
+
+const linkStyle = {
+    color: "white",
+    textDecoration: "none",
+    fontWeight: "500"
+};
 
 export default Navbar;
