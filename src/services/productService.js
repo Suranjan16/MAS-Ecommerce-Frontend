@@ -7,6 +7,14 @@ export const getAllProducts = async () => {
     return response.data;
 };
 
+export const searchProductsByName = async (name) => {
+    const response = await axios.get(
+        `${API_URL}/search/${encodeURIComponent(name)}`
+    );
+
+    return response.data;
+};
+
 export const getProductById = async (productId) => {
     const response = await axios.get(`${API_URL}/${productId}`);
     return response.data;

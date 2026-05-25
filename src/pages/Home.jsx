@@ -1,65 +1,55 @@
 import { useEffect, useState } from "react";
 
-import { getAllProducts } from "../services/productService";
+import {
+    getAllProducts,
+    searchProductsByName
+} from "../services/productService";
 
 import { addProductToCart } from "../services/cartService";
 
 function Home() {
-
     const [products, setProducts] = useState([]);
 
+    const [searchName, setSearchName] = useState("");
+
     useEffect(() => {
-
         fetchProducts();
-
     }, []);
 
     const fetchProducts = async () => {
-
         try {
-
             const data = await getAllProducts();
 
-            console.log(
-                "Products from backend:",
-                data
-            );
+            setProducts(data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const handleSearch = async () => {
+        try {
+            if (searchName.trim() === "") {
+                fetchProducts();
+                return;
+            }
+
+            const data = await searchProductsByName(searchName);
 
             setProducts(data);
-
         } catch (error) {
-
             console.log(error);
         }
     };
 
     const addToCart = async (productId) => {
-
         try {
-
-            const response = await addProductToCart(
-                productId,
-                1
-            );
+            const response = await addProductToCart(productId, 1);
 
             alert(response);
-
         } catch (error) {
-
-            console.log(
-                "Add to cart error:",
-                error
-            );
-
-            console.log(
-                "Status:",
-                error.response?.status
-            );
-
-            console.log(
-                "Data:",
-                error.response?.data
-            );
+            console.log("Add to cart error:", error);
+            console.log("Status:", error.response?.status);
+            console.log("Data:", error.response?.data);
 
             alert("Add to cart failed");
         }
@@ -67,60 +57,66 @@ function Home() {
 
     return (
         <div>
-
             <h1>MAS Ecommerce</h1>
 
             <h2>Products</h2>
 
-            {
-                products.map((product) => (
+            <input
+                type="text"
+                placeholder="Search product by name"
+                value={searchName}
+                onChange={(e) => setSearchName(e.target.value)}
+            />
 
-                    <div key={product.id}>
+            <button onClick={handleSearch}>
+                Search
+            </button>
 
-                        <img
-                            src={
-                                product.imageUrl
-                                    || "https://placehold.co/200x200"
-                            }
-                            alt={product.name}
-                            width="200"
-                            onError={(e) => {
-                                e.target.src =
-                                    "https://placehold.co/200x200";
-                            }}
-                        />
+            <button
+                onClick={() => {
+                    setSearchName("");
+                    fetchProducts();
+                }}
+            >
+                Clear
+            </button>
 
-                        <h3>
-                            {product.name}
-                        </h3>
+            <hr />
 
-                        <p>
-                            Category:
-                            {product.category}
-                        </p>
+            {products.map((product) => (
+                <div key={product.id}>
+                    <img
+                        src={
+                            product.imageUrl ||
+                            "https://placehold.co/200x200"
+                        }
+                        alt={product.name}
+                        width="200"
+                        onError={(e) => {
+                            e.target.src =
+                                "https://placehold.co/200x200";
+                        }}
+                    />
 
-                        <p>
-                            Price: ₹{product.price}
-                        </p>
+                    <h3>{product.name}</h3>
 
-                        <p>
-                            Stock: {product.quantity}
-                        </p>
+                    <p>Category: {product.category}</p>
 
-                        <button
-                            onClick={() =>
-                                addToCart(product.id)
-                            }
-                        >
-                            Add to Cart
-                        </button>
+                    <p>Price: ₹{product.price}</p>
 
-                        <hr />
+                    <p>Stock: {product.quantity}</p>
 
-                    </div>
-                ))
-            }
+                    <button
+                        onClick={() =>
+                            addToCart(product.id)
+                        }
+                    >
+                        Add to Cart
+                    </button>
 
+                    <hr />
+                </div>
+            ))}
         </div>
     );
 }
