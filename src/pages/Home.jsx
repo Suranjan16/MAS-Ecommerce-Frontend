@@ -42,6 +42,13 @@ function Home() {
     };
 
     const addToCart = async (productId) => {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            alert("To add product to cart, you have to login first");
+            return;
+        }
+
         try {
             const response = await addProductToCart(productId, 1);
 
