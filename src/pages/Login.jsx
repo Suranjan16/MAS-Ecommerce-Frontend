@@ -6,42 +6,78 @@ import { loginUser } from "../services/authService";
 import { toast } from "react-toastify";
 
 function Login() {
+
     const [email, setEmail] = useState("");
+
     const [password, setPassword] = useState("");
+
+    const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
+
         e.preventDefault();
 
+        setLoading(true);
+
         try {
-            const data = await loginUser(email, password);
 
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("role", data.role);
+            const data =
+                await loginUser(
+                    email,
+                    password
+                );
 
-            toast.success("Login successful");
+            localStorage.setItem(
+                "token",
+                data.token
+            );
+
+            localStorage.setItem(
+                "role",
+                data.role
+            );
+
+            toast.success(
+                "Login successful"
+            );
 
             navigate("/home");
 
             window.location.reload();
+
         } catch (error) {
+
             console.log(error);
-            toast.error("Invalid email or password");
+
+            toast.error(
+                "Invalid email or password"
+            );
+
+        } finally {
+
+            setLoading(false);
         }
     };
 
     return (
         <div style={pageStyle}>
+
             <div style={cardStyle}>
-                <h1 style={titleStyle}>Login</h1>
+
+                <h1 style={titleStyle}>
+                    Login
+                </h1>
 
                 <p style={subtitleStyle}>
                     Welcome back to MAS
                 </p>
 
                 <form onSubmit={handleLogin}>
+
                     <div style={fieldStyle}>
+
                         <label style={labelStyle}>
                             Email
                         </label>
@@ -56,9 +92,11 @@ function Login() {
                             style={inputStyle}
                             required
                         />
+
                     </div>
 
                     <div style={fieldStyle}>
+
                         <label style={labelStyle}>
                             Password
                         </label>
@@ -73,26 +111,44 @@ function Login() {
                             style={inputStyle}
                             required
                         />
+
                     </div>
 
                     <button
                         type="submit"
-                        style={buttonStyle}
+                        disabled={loading}
+                        style={{
+                            ...buttonStyle,
+                            opacity: loading ? 0.7 : 1,
+                            cursor: loading
+                                ? "not-allowed"
+                                : "pointer"
+                        }}
                     >
-                        Login
+                        {
+                            loading
+                                ? "Logging in..."
+                                : "Login"
+                        }
                     </button>
+
                 </form>
 
                 <p style={bottomTextStyle}>
+
                     Don&apos;t have an account?{" "}
+
                     <Link
                         to="/signup"
                         style={linkStyle}
                     >
                         Signup
                     </Link>
+
                 </p>
+
             </div>
+
         </div>
     );
 }
@@ -154,8 +210,7 @@ const buttonStyle = {
     backgroundColor: "#2563eb",
     color: "white",
     fontSize: "16px",
-    fontWeight: "bold",
-    cursor: "pointer"
+    fontWeight: "bold"
 };
 
 const bottomTextStyle = {

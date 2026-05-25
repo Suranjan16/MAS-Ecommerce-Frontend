@@ -11,11 +11,14 @@ function AddProduct() {
     const [price, setPrice] = useState("");
     const [quantity, setQuantity] = useState("");
     const [imageUrl, setImageUrl] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        setLoading(true);
 
         try {
             const product = {
@@ -35,6 +38,8 @@ function AddProduct() {
             console.log(error);
 
             toast.error("Failed to add product");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -111,9 +116,7 @@ function AddProduct() {
 
                     {imageUrl && (
                         <div style={previewBoxStyle}>
-                            <p style={previewTextStyle}>
-                                Image Preview
-                            </p>
+                            <p style={previewTextStyle}>Image Preview</p>
 
                             <img
                                 src={imageUrl}
@@ -127,8 +130,18 @@ function AddProduct() {
                         </div>
                     )}
 
-                    <button type="submit" style={buttonStyle}>
-                        Add Product
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        style={{
+                            ...buttonStyle,
+                            opacity: loading ? 0.7 : 1,
+                            cursor: loading
+                                ? "not-allowed"
+                                : "pointer"
+                        }}
+                    >
+                        {loading ? "Adding Product..." : "Add Product"}
                     </button>
 
                     <button
@@ -229,8 +242,7 @@ const buttonStyle = {
     color: "white",
     borderRadius: "8px",
     fontSize: "16px",
-    fontWeight: "bold",
-    cursor: "pointer"
+    fontWeight: "bold"
 };
 
 const backButtonStyle = {

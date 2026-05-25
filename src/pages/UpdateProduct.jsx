@@ -20,6 +20,8 @@ function UpdateProduct() {
         imageUrl: ""
     });
 
+    const [loading, setLoading] = useState(false);
+
     useEffect(() => {
         fetchProduct();
     }, []);
@@ -44,6 +46,8 @@ function UpdateProduct() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        setLoading(true);
+
         try {
             await updateProduct(id, product);
 
@@ -54,6 +58,8 @@ function UpdateProduct() {
             console.log(error);
 
             toast.error("Failed to update product");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -135,9 +141,7 @@ function UpdateProduct() {
 
                     {product.imageUrl && (
                         <div style={previewBoxStyle}>
-                            <p style={previewTextStyle}>
-                                Image Preview
-                            </p>
+                            <p style={previewTextStyle}>Image Preview</p>
 
                             <img
                                 src={product.imageUrl}
@@ -151,8 +155,20 @@ function UpdateProduct() {
                         </div>
                     )}
 
-                    <button type="submit" style={buttonStyle}>
-                        Update Product
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        style={{
+                            ...buttonStyle,
+                            opacity: loading ? 0.7 : 1,
+                            cursor: loading
+                                ? "not-allowed"
+                                : "pointer"
+                        }}
+                    >
+                        {loading
+                            ? "Updating Product..."
+                            : "Update Product"}
                     </button>
 
                     <button
@@ -253,8 +269,7 @@ const buttonStyle = {
     color: "white",
     borderRadius: "8px",
     fontSize: "16px",
-    fontWeight: "bold",
-    cursor: "pointer"
+    fontWeight: "bold"
 };
 
 const backButtonStyle = {

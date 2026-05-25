@@ -13,22 +13,21 @@ import { toast } from "react-toastify";
 
 function Signup() {
 
-    const [name, setName] =
-        useState("");
+    const [name, setName] = useState("");
 
-    const [email, setEmail] =
-        useState("");
+    const [email, setEmail] = useState("");
 
-    const [password, setPassword] =
-        useState("");
+    const [password, setPassword] = useState("");
 
-    const navigate =
-        useNavigate();
+    const [loading, setLoading] = useState(false);
 
-    const handleSignup =
-        async (e) => {
+    const navigate = useNavigate();
+
+    const handleSignup = async (e) => {
 
         e.preventDefault();
+
+        setLoading(true);
 
         try {
 
@@ -46,7 +45,11 @@ function Signup() {
 
             console.log(error);
 
-            toast.success("Signup failed");
+            toast.error("Signup failed");
+
+        } finally {
+
+            setLoading(false);
         }
     };
 
@@ -63,11 +66,7 @@ function Signup() {
                     Create your MAS account
                 </p>
 
-                <form
-                    onSubmit={
-                        handleSignup
-                    }
-                >
+                <form onSubmit={handleSignup}>
 
                     <div style={fieldStyle}>
 
@@ -79,9 +78,7 @@ function Signup() {
                             type="text"
                             value={name}
                             onChange={(e) =>
-                                setName(
-                                    e.target.value
-                                )
+                                setName(e.target.value)
                             }
                             placeholder="Enter your name"
                             style={inputStyle}
@@ -100,9 +97,7 @@ function Signup() {
                             type="email"
                             value={email}
                             onChange={(e) =>
-                                setEmail(
-                                    e.target.value
-                                )
+                                setEmail(e.target.value)
                             }
                             placeholder="Enter your email"
                             style={inputStyle}
@@ -121,9 +116,7 @@ function Signup() {
                             type="password"
                             value={password}
                             onChange={(e) =>
-                                setPassword(
-                                    e.target.value
-                                )
+                                setPassword(e.target.value)
                             }
                             placeholder="Enter your password"
                             style={inputStyle}
@@ -134,9 +127,20 @@ function Signup() {
 
                     <button
                         type="submit"
-                        style={buttonStyle}
+                        disabled={loading}
+                        style={{
+                            ...buttonStyle,
+                            opacity: loading ? 0.7 : 1,
+                            cursor: loading
+                                ? "not-allowed"
+                                : "pointer"
+                        }}
                     >
-                        Signup
+                        {
+                            loading
+                                ? "Signing up..."
+                                : "Signup"
+                        }
                     </button>
 
                 </form>
@@ -218,8 +222,7 @@ const buttonStyle = {
     backgroundColor: "#2563eb",
     color: "white",
     fontSize: "16px",
-    fontWeight: "bold",
-    cursor: "pointer"
+    fontWeight: "bold"
 };
 
 const bottomTextStyle = {
