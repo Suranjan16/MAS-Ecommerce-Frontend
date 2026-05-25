@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 import { loginUser } from "../services/authService";
 
@@ -23,7 +23,6 @@ function Login() {
             navigate("/home");
 
             window.location.reload();
-
         } catch (error) {
             console.log(error);
             alert("Invalid email or password");
@@ -31,38 +30,142 @@ function Login() {
     };
 
     return (
-        <div>
-            <h1>Login Page</h1>
+        <div style={pageStyle}>
+            <div style={cardStyle}>
+                <h1 style={titleStyle}>Login</h1>
 
-            <form onSubmit={handleLogin}>
-                <div>
-                    <label>Email</label>
-                    <br />
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
-                </div>
+                <p style={subtitleStyle}>
+                    Welcome back to MAS
+                </p>
 
-                <br />
+                <form onSubmit={handleLogin}>
+                    <div style={fieldStyle}>
+                        <label style={labelStyle}>
+                            Email
+                        </label>
 
-                <div>
-                    <label>Password</label>
-                    <br />
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                </div>
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) =>
+                                setEmail(e.target.value)
+                            }
+                            placeholder="Enter your email"
+                            style={inputStyle}
+                            required
+                        />
+                    </div>
 
-                <br />
+                    <div style={fieldStyle}>
+                        <label style={labelStyle}>
+                            Password
+                        </label>
 
-                <button type="submit">Login</button>
-            </form>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) =>
+                                setPassword(e.target.value)
+                            }
+                            placeholder="Enter your password"
+                            style={inputStyle}
+                            required
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
+                        style={buttonStyle}
+                    >
+                        Login
+                    </button>
+                </form>
+
+                <p style={bottomTextStyle}>
+                    Don&apos;t have an account?{" "}
+                    <Link
+                        to="/signup"
+                        style={linkStyle}
+                    >
+                        Signup
+                    </Link>
+                </p>
+            </div>
         </div>
     );
 }
+
+const pageStyle = {
+    minHeight: "100vh",
+    paddingTop: "90px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f9fafb"
+};
+
+const cardStyle = {
+    width: "380px",
+    padding: "30px",
+    borderRadius: "14px",
+    backgroundColor: "white",
+    boxShadow: "0 2px 14px rgba(0,0,0,0.12)"
+};
+
+const titleStyle = {
+    marginBottom: "8px",
+    textAlign: "center",
+    color: "#111827"
+};
+
+const subtitleStyle = {
+    textAlign: "center",
+    color: "#6b7280",
+    marginBottom: "25px"
+};
+
+const fieldStyle = {
+    marginBottom: "18px"
+};
+
+const labelStyle = {
+    display: "block",
+    marginBottom: "6px",
+    fontWeight: "600",
+    color: "#374151"
+};
+
+const inputStyle = {
+    width: "100%",
+    padding: "11px",
+    borderRadius: "8px",
+    border: "1px solid #d1d5db",
+    fontSize: "15px",
+    boxSizing: "border-box"
+};
+
+const buttonStyle = {
+    width: "100%",
+    padding: "12px",
+    border: "none",
+    borderRadius: "8px",
+    backgroundColor: "#2563eb",
+    color: "white",
+    fontSize: "16px",
+    fontWeight: "bold",
+    cursor: "pointer"
+};
+
+const bottomTextStyle = {
+    marginTop: "18px",
+    textAlign: "center",
+    color: "#6b7280"
+};
+
+const linkStyle = {
+    color: "#2563eb",
+    fontWeight: "bold",
+    textDecoration: "none"
+};
 
 export default Login;
