@@ -23,6 +23,17 @@ export const getProductsByCategory = async (category) => {
     return response.data;
 };
 
+export const getProductsByPriceRange = async (
+    minPrice,
+    maxPrice
+) => {
+    const response = await axios.get(
+        `${API_URL}/filter?minPrice=${minPrice}&maxPrice=${maxPrice}`
+    );
+
+    return response.data;
+};
+
 export const getProductById = async (productId) => {
     const response = await axios.get(`${API_URL}/${productId}`);
     return response.data;

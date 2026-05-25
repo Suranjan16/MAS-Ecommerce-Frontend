@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import {
     getAllProducts,
     searchProductsByName,
-    getProductsByCategory
+    getProductsByCategory,
+    getProductsByPriceRange
 } from "../services/productService";
 
 import { addProductToCart } from "../services/cartService";
@@ -14,6 +15,10 @@ function Home() {
     const [searchName, setSearchName] = useState("");
 
     const [category, setCategory] = useState("");
+
+    const [minPrice, setMinPrice] = useState("");
+
+    const [maxPrice, setMaxPrice] = useState("");
 
     useEffect(() => {
         fetchProducts();
@@ -54,6 +59,24 @@ function Home() {
             }
 
             const data = await getProductsByCategory(value);
+
+            setProducts(data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const handlePriceFilter = async () => {
+        try {
+            if (minPrice === "" || maxPrice === "") {
+                alert("Please enter both minimum and maximum price");
+                return;
+            }
+
+            const data = await getProductsByPriceRange(
+                minPrice,
+                maxPrice
+            );
 
             setProducts(data);
         } catch (error) {
@@ -103,6 +126,8 @@ function Home() {
                 onClick={() => {
                     setSearchName("");
                     setCategory("");
+                    setMinPrice("");
+                    setMaxPrice("");
                     fetchProducts();
                 }}
             >
@@ -124,6 +149,31 @@ function Home() {
                 <option value="Electronics">Electronics</option>
                 <option value="Fashion">Fashion</option>
             </select>
+
+            <br />
+            <br />
+
+            <input
+                type="number"
+                placeholder="Min Price"
+                value={minPrice}
+                onChange={(e) =>
+                    setMinPrice(e.target.value)
+                }
+            />
+
+            <input
+                type="number"
+                placeholder="Max Price"
+                value={maxPrice}
+                onChange={(e) =>
+                    setMaxPrice(e.target.value)
+                }
+            />
+
+            <button onClick={handlePriceFilter}>
+                Filter Price
+            </button>
 
             <hr />
 
