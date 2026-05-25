@@ -41,7 +41,7 @@ function Navbar() {
                     margin: 0
                 }}
             >
-                MAS Ecommerce
+                MAS
             </h2>
 
             <div

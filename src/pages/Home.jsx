@@ -183,11 +183,12 @@ function Home() {
     };
 
     return (
-        <div>
-
-            <h1>
-                MAS
-            </h1>
+        <div
+            style={{
+                padding: "20px",
+                paddingTop: "90px"
+            }}
+        >
 
             <input
                 type="text"
@@ -316,7 +317,8 @@ function Home() {
             <div
                 style={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(5, 1fr)",
+                    gridTemplateColumns:
+                        "repeat(5, 1fr)",
                     gap: "20px"
                 }}
             >
@@ -328,7 +330,8 @@ function Home() {
                         <div
                             key={product.id}
                             style={{
-                                border: "1px solid #ccc",
+                                border:
+                                    "1px solid #ccc",
                                 padding: "10px",
                                 textAlign: "center",
                                 minHeight: "380px",
@@ -395,6 +398,7 @@ function Home() {
                 }
 
             </div>
+
             <br />
 
             <button
