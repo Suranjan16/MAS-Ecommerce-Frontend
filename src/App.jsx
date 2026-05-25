@@ -10,6 +10,7 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Orders from "./pages/Orders";
 import AdminDashboard from "./pages/AdminDashboard";
+import AddProduct from "./pages/AddProduct";
 
 function App() {
     return (
@@ -30,6 +31,15 @@ function App() {
                     element={
                         <AdminRoute>
                             <AdminDashboard />
+                        </AdminRoute>
+                    }
+                />
+
+                <Route
+                    path="/admin/add-product"
+                    element={
+                        <AdminRoute>
+                            <AddProduct />
                         </AdminRoute>
                     }
                 />

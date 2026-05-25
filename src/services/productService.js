@@ -8,3 +8,20 @@ export const getAllProducts = async () => {
 
     return response.data;
 };
+
+export const addProduct = async (product) => {
+
+    const token = localStorage.getItem("token");
+
+    const response = await axios.post(
+        API_URL,
+        product,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+
+    return response.data;
+};

@@ -1,25 +1,25 @@
 import { useEffect, useState } from "react";
 
+import { useNavigate } from "react-router-dom";
+
 import { getAllProducts } from "../services/productService";
 
 function AdminDashboard() {
 
     const [products, setProducts] = useState([]);
 
+    const navigate = useNavigate();
+
     useEffect(() => {
         fetchProducts();
     }, []);
 
     const fetchProducts = async () => {
-
         try {
-
             const data = await getAllProducts();
 
             setProducts(data);
-
         } catch (error) {
-
             console.log(error);
         }
     };
@@ -29,7 +29,11 @@ function AdminDashboard() {
 
             <h1>Admin Dashboard</h1>
 
-            <button>
+            <button
+                onClick={() =>
+                    navigate("/admin/add-product")
+                }
+            >
                 Add Product
             </button>
 
@@ -47,24 +51,19 @@ function AdminDashboard() {
                             }
                             alt={product.name}
                             width="150"
+                            onError={(e) => {
+                                e.target.src =
+                                    "https://placehold.co/150x150";
+                            }}
                         />
 
-                        <h3>
-                            {product.name}
-                        </h3>
+                        <h3>{product.name}</h3>
 
-                        <p>
-                            Category:
-                            {product.category}
-                        </p>
+                        <p>Category: {product.category}</p>
 
-                        <p>
-                            Price: ₹{product.price}
-                        </p>
+                        <p>Price: ₹{product.price}</p>
 
-                        <p>
-                            Stock: {product.quantity}
-                        </p>
+                        <p>Stock: {product.quantity}</p>
 
                         <button>
                             Edit
