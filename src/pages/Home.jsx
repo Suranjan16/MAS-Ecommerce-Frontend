@@ -32,7 +32,7 @@ function Home() {
     const [totalPages, setTotalPages] =
         useState(0);
 
-    const size = 5;
+    const size = 25;
 
     useEffect(() => {
         fetchProducts();
@@ -317,66 +317,83 @@ function Home() {
 
             <hr />
 
-            {
-                products.map(
-                    (product) => (
+            <div
+                style={{
+                    display: "grid",
+                    gridTemplateColumns:
+                        "repeat(5, 1fr)",
+                    gap: "20px"
+                }}
+            >
 
-                    <div
-                        key={product.id}
-                    >
+                {
+                    products.map(
+                        (product) => (
 
-                        <img
-                            src={
-                                product.imageUrl
-                                || "https://placehold.co/200x200"
-                            }
-                            alt={
-                                product.name
-                            }
-                            width="200"
-                            onError={(e) => {
-                                e.target.src =
-                                "https://placehold.co/200x200";
+                        <div
+                            key={product.id}
+                            style={{
+                                border:
+                                    "1px solid #ccc",
+                                padding: "10px",
+                                textAlign: "center"
                             }}
-                        />
-
-                        <h3>
-                            {product.name}
-                        </h3>
-
-                        <p>
-                            Category:
-                            {" "}
-                            {product.category}
-                        </p>
-
-                        <p>
-                            Price:
-                            {" "}
-                            ₹{product.price}
-                        </p>
-
-                        <p>
-                            Stock:
-                            {" "}
-                            {product.quantity}
-                        </p>
-
-                        <button
-                            onClick={() =>
-                                addToCart(
-                                    product.id
-                                )
-                            }
                         >
-                            Add to Cart
-                        </button>
 
-                        <hr />
+                            <img
+                                src={
+                                    product.imageUrl
+                                    || "https://placehold.co/200x200"
+                                }
+                                alt={
+                                    product.name
+                                }
+                                width="200"
+                                onError={(e) => {
+                                    e.target.src =
+                                    "https://placehold.co/200x200";
+                                }}
+                            />
 
-                    </div>
-                ))
-            }
+                            <h3>
+                                {product.name}
+                            </h3>
+
+                            <p>
+                                Category:
+                                {" "}
+                                {product.category}
+                            </p>
+
+                            <p>
+                                Price:
+                                {" "}
+                                ₹{product.price}
+                            </p>
+
+                            <p>
+                                Stock:
+                                {" "}
+                                {product.quantity}
+                            </p>
+
+                            <button
+                                onClick={() =>
+                                    addToCart(
+                                        product.id
+                                    )
+                                }
+                            >
+                                Add to Cart
+                            </button>
+
+                        </div>
+                    ))
+                }
+
+            </div>
+
+            <br />
 
             <button
                 disabled={page === 0}
