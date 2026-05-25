@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import {
-    getAllProducts,
+    getProductsWithPagination,
     searchProductsByName,
     getProductsByCategory,
     getProductsByPriceRange,
@@ -11,6 +11,7 @@ import {
 import { addProductToCart } from "../services/cartService";
 
 function Home() {
+
     const [products, setProducts] = useState([]);
 
     const [searchName, setSearchName] = useState("");
@@ -23,108 +24,155 @@ function Home() {
 
     const [sortOption, setSortOption] = useState("");
 
+    const [page, setPage] = useState(0);
+
+    const [totalPages, setTotalPages] = useState(0);
+
+    const size = 5;
+
     useEffect(() => {
-        fetchProducts();
-    }, []);
+        fetchProducts(page);
+    }, [page]);
 
-    const fetchProducts = async () => {
+    const fetchProducts = async (currentPage) => {
         try {
-            const data = await getAllProducts();
 
-            setProducts(data);
+            const data =
+                await getProductsWithPagination(
+                    currentPage,
+                    size
+                );
+
+            setProducts(data.content);
+
+            setTotalPages(data.totalPages);
+
         } catch (error) {
+
             console.log(error);
         }
     };
 
     const handleSearch = async () => {
         try {
+
             if (searchName.trim() === "") {
-                fetchProducts();
+                fetchProducts(page);
                 return;
             }
 
-            const data = await searchProductsByName(searchName);
+            const data =
+                await searchProductsByName(searchName);
 
             setProducts(data);
+
         } catch (error) {
+
             console.log(error);
         }
     };
 
     const handleCategoryFilter = async (value) => {
+
         setCategory(value);
 
         try {
+
             if (value === "") {
-                fetchProducts();
+                fetchProducts(page);
                 return;
             }
 
-            const data = await getProductsByCategory(value);
+            const data =
+                await getProductsByCategory(value);
 
             setProducts(data);
+
         } catch (error) {
+
             console.log(error);
         }
     };
 
     const handlePriceFilter = async () => {
+
         try {
+
             if (minPrice === "" || maxPrice === "") {
-                alert("Please enter both minimum and maximum price");
+
+                alert(
+                    "Please enter both minimum and maximum price"
+                );
+
                 return;
             }
 
-            const data = await getProductsByPriceRange(
-                minPrice,
-                maxPrice
-            );
+            const data =
+                await getProductsByPriceRange(
+                    minPrice,
+                    maxPrice
+                );
 
             setProducts(data);
+
         } catch (error) {
+
             console.log(error);
         }
     };
 
     const handleSort = async (value) => {
+
         setSortOption(value);
 
         try {
+
             if (value === "") {
-                fetchProducts();
+                fetchProducts(page);
                 return;
             }
 
-            const [sort, direction] = value.split("-");
+            const [sort, direction] =
+                value.split("-");
 
-            const data = await getProductsWithSorting(
-                sort,
-                direction
-            );
+            const data =
+                await getProductsWithSorting(
+                    sort,
+                    direction
+                );
 
             setProducts(data);
+
         } catch (error) {
+
             console.log(error);
         }
     };
 
     const addToCart = async (productId) => {
-        const token = localStorage.getItem("token");
+
+        const token =
+            localStorage.getItem("token");
 
         if (!token) {
-            alert("To add product to cart, you have to login first");
+
+            alert(
+                "To add product to cart, you have to login first"
+            );
+
             return;
         }
 
         try {
-            const response = await addProductToCart(productId, 1);
+
+            const response =
+                await addProductToCart(productId, 1);
 
             alert(response);
+
         } catch (error) {
-            console.log("Add to cart error:", error);
-            console.log("Status:", error.response?.status);
-            console.log("Data:", error.response?.data);
+
+            console.log(error);
 
             alert("Add to cart failed");
         }
@@ -132,6 +180,7 @@ function Home() {
 
     return (
         <div>
+
             <h1>MAS Ecommerce</h1>
 
             <h2>Products</h2>
@@ -140,7 +189,9 @@ function Home() {
                 type="text"
                 placeholder="Search product by name"
                 value={searchName}
-                onChange={(e) => setSearchName(e.target.value)}
+                onChange={(e) =>
+                    setSearchName(e.target.value)
+                }
             />
 
             <button onClick={handleSearch}>
@@ -149,12 +200,20 @@ function Home() {
 
             <button
                 onClick={() => {
+
                     setSearchName("");
+
                     setCategory("");
+
                     setMinPrice("");
+
                     setMaxPrice("");
+
                     setSortOption("");
-                    fetchProducts();
+
+                    setPage(0);
+
+                    fetchProducts(0);
                 }}
             >
                 Clear
@@ -166,14 +225,30 @@ function Home() {
             <select
                 value={category}
                 onChange={(e) =>
-                    handleCategoryFilter(e.target.value)
+                    handleCategoryFilter(
+                        e.target.value
+                    )
                 }
             >
-                <option value="">All Categories</option>
-                <option value="Mobile">Mobile</option>
-                <option value="Laptop">Laptop</option>
-                <option value="Electronics">Electronics</option>
-                <option value="Fashion">Fashion</option>
+                <option value="">
+                    All Categories
+                </option>
+
+                <option value="Mobile">
+                    Mobile
+                </option>
+
+                <option value="Laptop">
+                    Laptop
+                </option>
+
+                <option value="Electronics">
+                    Electronics
+                </option>
+
+                <option value="Fashion">
+                    Fashion
+                </option>
             </select>
 
             <br />
@@ -210,49 +285,99 @@ function Home() {
                     handleSort(e.target.value)
                 }
             >
-                <option value="">Default Sorting</option>
-                <option value="price-asc">Price Low to High</option>
-                <option value="price-desc">Price High to Low</option>
-                <option value="name-asc">Name A-Z</option>
-                <option value="name-desc">Name Z-A</option>
+                <option value="">
+                    Default Sorting
+                </option>
+
+                <option value="price-asc">
+                    Price Low to High
+                </option>
+
+                <option value="price-desc">
+                    Price High to Low
+                </option>
+
+                <option value="name-asc">
+                    Name A-Z
+                </option>
+
+                <option value="name-desc">
+                    Name Z-A
+                </option>
             </select>
 
             <hr />
 
-            {products.map((product) => (
-                <div key={product.id}>
-                    <img
-                        src={
-                            product.imageUrl ||
-                            "https://placehold.co/200x200"
-                        }
-                        alt={product.name}
-                        width="200"
-                        onError={(e) => {
-                            e.target.src =
-                                "https://placehold.co/200x200";
-                        }}
-                    />
+            {
+                products.map((product) => (
 
-                    <h3>{product.name}</h3>
+                    <div key={product.id}>
 
-                    <p>Category: {product.category}</p>
+                        <img
+                            src={
+                                product.imageUrl ||
+                                "https://placehold.co/200x200"
+                            }
+                            alt={product.name}
+                            width="200"
+                            onError={(e) => {
+                                e.target.src =
+                                    "https://placehold.co/200x200";
+                            }}
+                        />
 
-                    <p>Price: ₹{product.price}</p>
+                        <h3>{product.name}</h3>
 
-                    <p>Stock: {product.quantity}</p>
+                        <p>
+                            Category:
+                            {product.category}
+                        </p>
 
-                    <button
-                        onClick={() =>
-                            addToCart(product.id)
-                        }
-                    >
-                        Add to Cart
-                    </button>
+                        <p>
+                            Price: ₹{product.price}
+                        </p>
 
-                    <hr />
-                </div>
-            ))}
+                        <p>
+                            Stock: {product.quantity}
+                        </p>
+
+                        <button
+                            onClick={() =>
+                                addToCart(product.id)
+                            }
+                        >
+                            Add to Cart
+                        </button>
+
+                        <hr />
+
+                    </div>
+                ))
+            }
+
+            <button
+                disabled={page === 0}
+                onClick={() =>
+                    setPage(page - 1)
+                }
+            >
+                Previous
+            </button>
+
+            <span>
+                {" "}
+                Page {page + 1} of {totalPages}{" "}
+            </span>
+
+            <button
+                disabled={page === totalPages - 1}
+                onClick={() =>
+                    setPage(page + 1)
+                }
+            >
+                Next
+            </button>
+
         </div>
     );
 }

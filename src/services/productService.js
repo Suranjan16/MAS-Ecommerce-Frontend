@@ -7,6 +7,19 @@ export const getAllProducts = async () => {
     return response.data;
 };
 
+export const getProductsWithPagination = async (
+    page,
+    size,
+    sort = "id",
+    direction = "asc"
+) => {
+    const response = await axios.get(
+        `${API_URL}/page?page=${page}&size=${size}&sort=${sort}&direction=${direction}`
+    );
+
+    return response.data;
+};
+
 export const searchProductsByName = async (name) => {
     const response = await axios.get(
         `${API_URL}/search/${encodeURIComponent(name)}`
