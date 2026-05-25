@@ -1,47 +1,72 @@
 import { useEffect, useState } from "react";
 
-import {
-    getProductsWithPagination,
-    searchProductsByName,
-    getProductsByCategory,
-    getProductsByPriceRange,
-    getProductsWithSorting
-} from "../services/productService";
+import { getAdvancedProducts }
+from "../services/productService";
 
-import { addProductToCart } from "../services/cartService";
+import { addProductToCart }
+from "../services/cartService";
 
 function Home() {
 
-    const [products, setProducts] = useState([]);
+    const [products, setProducts] =
+        useState([]);
 
-    const [searchName, setSearchName] = useState("");
+    const [searchName, setSearchName] =
+        useState("");
 
-    const [category, setCategory] = useState("");
+    const [category, setCategory] =
+        useState("");
 
-    const [minPrice, setMinPrice] = useState("");
+    const [minPrice, setMinPrice] =
+        useState("");
 
-    const [maxPrice, setMaxPrice] = useState("");
+    const [maxPrice, setMaxPrice] =
+        useState("");
 
-    const [sortOption, setSortOption] = useState("");
+    const [sortOption, setSortOption] =
+        useState("");
 
-    const [page, setPage] = useState(0);
+    const [page, setPage] =
+        useState(0);
 
-    const [totalPages, setTotalPages] = useState(0);
+    const [totalPages, setTotalPages] =
+        useState(0);
 
     const size = 5;
 
     useEffect(() => {
-        fetchProducts(page);
-    }, [page]);
+        fetchProducts();
+    }, [
+        page,
+        category,
+        sortOption
+    ]);
 
-    const fetchProducts = async (currentPage) => {
+    const fetchProducts = async () => {
+
         try {
 
+            let sort = "id";
+
+            let direction = "asc";
+
+            if (sortOption !== "") {
+
+                [sort, direction] =
+                    sortOption.split("-");
+            }
+
             const data =
-                await getProductsWithPagination(
-                    currentPage,
-                    size
-                );
+                await getAdvancedProducts({
+                    category,
+                    name: searchName,
+                    minPrice,
+                    maxPrice,
+                    page,
+                    size,
+                    sort,
+                    direction
+                });
 
             setProducts(data.content);
 
@@ -54,102 +79,76 @@ function Home() {
     };
 
     const handleSearch = async () => {
-        try {
 
-            if (searchName.trim() === "") {
-                fetchProducts(page);
-                return;
-            }
+        setPage(0);
 
-            const data =
-                await searchProductsByName(searchName);
-
-            setProducts(data);
-
-        } catch (error) {
-
-            console.log(error);
-        }
+        await fetchProducts();
     };
 
-    const handleCategoryFilter = async (value) => {
+    const handleCategoryFilter = (
+        value
+    ) => {
 
         setCategory(value);
 
-        try {
-
-            if (value === "") {
-                fetchProducts(page);
-                return;
-            }
-
-            const data =
-                await getProductsByCategory(value);
-
-            setProducts(data);
-
-        } catch (error) {
-
-            console.log(error);
-        }
+        setPage(0);
     };
 
-    const handlePriceFilter = async () => {
+    const handlePriceFilter =
+        async () => {
 
-        try {
+        if (
+            minPrice === ""
+            || maxPrice === ""
+        ) {
 
-            if (minPrice === "" || maxPrice === "") {
+            alert(
+                "Please enter both minimum and maximum price"
+            );
 
-                alert(
-                    "Please enter both minimum and maximum price"
-                );
-
-                return;
-            }
-
-            const data =
-                await getProductsByPriceRange(
-                    minPrice,
-                    maxPrice
-                );
-
-            setProducts(data);
-
-        } catch (error) {
-
-            console.log(error);
+            return;
         }
+
+        setPage(0);
+
+        await fetchProducts();
     };
 
-    const handleSort = async (value) => {
+    const handleSort = (value) => {
 
         setSortOption(value);
 
-        try {
-
-            if (value === "") {
-                fetchProducts(page);
-                return;
-            }
-
-            const [sort, direction] =
-                value.split("-");
-
-            const data =
-                await getProductsWithSorting(
-                    sort,
-                    direction
-                );
-
-            setProducts(data);
-
-        } catch (error) {
-
-            console.log(error);
-        }
+        setPage(0);
     };
 
-    const addToCart = async (productId) => {
+    const handleClear = async () => {
+
+        setSearchName("");
+
+        setCategory("");
+
+        setMinPrice("");
+
+        setMaxPrice("");
+
+        setSortOption("");
+
+        setPage(0);
+
+        const data =
+            await getAdvancedProducts({
+                page: 0,
+                size
+            });
+
+        setProducts(data.content);
+
+        setTotalPages(data.totalPages);
+    };
+
+    const addToCart = async (
+        productId
+    ) => {
 
         const token =
             localStorage.getItem("token");
@@ -166,7 +165,10 @@ function Home() {
         try {
 
             const response =
-                await addProductToCart(productId, 1);
+                await addProductToCart(
+                    productId,
+                    1
+                );
 
             alert(response);
 
@@ -174,47 +176,42 @@ function Home() {
 
             console.log(error);
 
-            alert("Add to cart failed");
+            alert(
+                "Add to cart failed"
+            );
         }
     };
 
     return (
         <div>
 
-            <h1>MAS Ecommerce</h1>
+            <h1>
+                MAS Ecommerce
+            </h1>
 
-            <h2>Products</h2>
+            <h2>
+                Products
+            </h2>
 
             <input
                 type="text"
                 placeholder="Search product by name"
                 value={searchName}
                 onChange={(e) =>
-                    setSearchName(e.target.value)
+                    setSearchName(
+                        e.target.value
+                    )
                 }
             />
 
-            <button onClick={handleSearch}>
+            <button
+                onClick={handleSearch}
+            >
                 Search
             </button>
 
             <button
-                onClick={() => {
-
-                    setSearchName("");
-
-                    setCategory("");
-
-                    setMinPrice("");
-
-                    setMaxPrice("");
-
-                    setSortOption("");
-
-                    setPage(0);
-
-                    fetchProducts(0);
-                }}
+                onClick={handleClear}
             >
                 Clear
             </button>
@@ -249,6 +246,7 @@ function Home() {
                 <option value="Fashion">
                     Fashion
                 </option>
+
             </select>
 
             <br />
@@ -259,7 +257,9 @@ function Home() {
                 placeholder="Min Price"
                 value={minPrice}
                 onChange={(e) =>
-                    setMinPrice(e.target.value)
+                    setMinPrice(
+                        e.target.value
+                    )
                 }
             />
 
@@ -268,11 +268,17 @@ function Home() {
                 placeholder="Max Price"
                 value={maxPrice}
                 onChange={(e) =>
-                    setMaxPrice(e.target.value)
+                    setMaxPrice(
+                        e.target.value
+                    )
                 }
             />
 
-            <button onClick={handlePriceFilter}>
+            <button
+                onClick={
+                    handlePriceFilter
+                }
+            >
                 Filter Price
             </button>
 
@@ -282,7 +288,9 @@ function Home() {
             <select
                 value={sortOption}
                 onChange={(e) =>
-                    handleSort(e.target.value)
+                    handleSort(
+                        e.target.value
+                    )
                 }
             >
                 <option value="">
@@ -304,46 +312,61 @@ function Home() {
                 <option value="name-desc">
                     Name Z-A
                 </option>
+
             </select>
 
             <hr />
 
             {
-                products.map((product) => (
+                products.map(
+                    (product) => (
 
-                    <div key={product.id}>
+                    <div
+                        key={product.id}
+                    >
 
                         <img
                             src={
-                                product.imageUrl ||
-                                "https://placehold.co/200x200"
+                                product.imageUrl
+                                || "https://placehold.co/200x200"
                             }
-                            alt={product.name}
+                            alt={
+                                product.name
+                            }
                             width="200"
                             onError={(e) => {
                                 e.target.src =
-                                    "https://placehold.co/200x200";
+                                "https://placehold.co/200x200";
                             }}
                         />
 
-                        <h3>{product.name}</h3>
+                        <h3>
+                            {product.name}
+                        </h3>
 
                         <p>
                             Category:
+                            {" "}
                             {product.category}
                         </p>
 
                         <p>
-                            Price: ₹{product.price}
+                            Price:
+                            {" "}
+                            ₹{product.price}
                         </p>
 
                         <p>
-                            Stock: {product.quantity}
+                            Stock:
+                            {" "}
+                            {product.quantity}
                         </p>
 
                         <button
                             onClick={() =>
-                                addToCart(product.id)
+                                addToCart(
+                                    product.id
+                                )
                             }
                         >
                             Add to Cart
@@ -366,11 +389,24 @@ function Home() {
 
             <span>
                 {" "}
-                Page {page + 1} of {totalPages}{" "}
+                Page
+                {" "}
+                {
+                    totalPages === 0
+                    ? 0
+                    : page + 1
+                }
+                {" "}
+                of
+                {" "}
+                {totalPages}
+                {" "}
             </span>
 
             <button
-                disabled={page === totalPages - 1}
+                disabled={
+                    page >= totalPages - 1
+                }
                 onClick={() =>
                     setPage(page + 1)
                 }
