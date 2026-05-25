@@ -34,6 +34,17 @@ export const getProductsByPriceRange = async (
     return response.data;
 };
 
+export const getProductsWithSorting = async (
+    sort,
+    direction
+) => {
+    const response = await axios.get(
+        `${API_URL}/page?page=0&size=100&sort=${sort}&direction=${direction}`
+    );
+
+    return response.data.content;
+};
+
 export const getProductById = async (productId) => {
     const response = await axios.get(`${API_URL}/${productId}`);
     return response.data;

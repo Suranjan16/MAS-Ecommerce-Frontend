@@ -4,7 +4,8 @@ import {
     getAllProducts,
     searchProductsByName,
     getProductsByCategory,
-    getProductsByPriceRange
+    getProductsByPriceRange,
+    getProductsWithSorting
 } from "../services/productService";
 
 import { addProductToCart } from "../services/cartService";
@@ -19,6 +20,8 @@ function Home() {
     const [minPrice, setMinPrice] = useState("");
 
     const [maxPrice, setMaxPrice] = useState("");
+
+    const [sortOption, setSortOption] = useState("");
 
     useEffect(() => {
         fetchProducts();
@@ -84,6 +87,28 @@ function Home() {
         }
     };
 
+    const handleSort = async (value) => {
+        setSortOption(value);
+
+        try {
+            if (value === "") {
+                fetchProducts();
+                return;
+            }
+
+            const [sort, direction] = value.split("-");
+
+            const data = await getProductsWithSorting(
+                sort,
+                direction
+            );
+
+            setProducts(data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     const addToCart = async (productId) => {
         const token = localStorage.getItem("token");
 
@@ -128,6 +153,7 @@ function Home() {
                     setCategory("");
                     setMinPrice("");
                     setMaxPrice("");
+                    setSortOption("");
                     fetchProducts();
                 }}
             >
@@ -174,6 +200,22 @@ function Home() {
             <button onClick={handlePriceFilter}>
                 Filter Price
             </button>
+
+            <br />
+            <br />
+
+            <select
+                value={sortOption}
+                onChange={(e) =>
+                    handleSort(e.target.value)
+                }
+            >
+                <option value="">Default Sorting</option>
+                <option value="price-asc">Price Low to High</option>
+                <option value="price-desc">Price High to Low</option>
+                <option value="name-asc">Name A-Z</option>
+                <option value="name-desc">Name Z-A</option>
+            </select>
 
             <hr />
 
