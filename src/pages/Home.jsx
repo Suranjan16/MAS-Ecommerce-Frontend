@@ -186,12 +186,8 @@ function Home() {
         <div>
 
             <h1>
-                MAS Ecommerce
+                MAS
             </h1>
-
-            <h2>
-                Products
-            </h2>
 
             <input
                 type="text"
@@ -320,8 +316,7 @@ function Home() {
             <div
                 style={{
                     display: "grid",
-                    gridTemplateColumns:
-                        "repeat(5, 1fr)",
+                    gridTemplateColumns: "repeat(5, 1fr)",
                     gap: "20px"
                 }}
             >
@@ -333,10 +328,13 @@ function Home() {
                         <div
                             key={product.id}
                             style={{
-                                border:
-                                    "1px solid #ccc",
+                                border: "1px solid #ccc",
                                 padding: "10px",
-                                textAlign: "center"
+                                textAlign: "center",
+                                minHeight: "380px",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between"
                             }}
                         >
 
@@ -348,7 +346,12 @@ function Home() {
                                 alt={
                                     product.name
                                 }
-                                width="200"
+                                style={{
+                                    width: "200px",
+                                    height: "200px",
+                                    objectFit: "cover",
+                                    margin: "0 auto"
+                                }}
                                 onError={(e) => {
                                     e.target.src =
                                     "https://placehold.co/200x200";
@@ -392,7 +395,6 @@ function Home() {
                 }
 
             </div>
-
             <br />
 
             <button
