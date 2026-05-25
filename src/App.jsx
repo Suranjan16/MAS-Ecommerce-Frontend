@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
+import AdminRoute from "./components/AdminRoute";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -8,6 +9,7 @@ import Signup from "./pages/Signup";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Orders from "./pages/Orders";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
     return (
@@ -22,6 +24,15 @@ function App() {
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/orders" element={<Orders />} />
+
+                <Route
+                    path="/admin"
+                    element={
+                        <AdminRoute>
+                            <AdminDashboard />
+                        </AdminRoute>
+                    }
+                />
             </Routes>
         </BrowserRouter>
     );
