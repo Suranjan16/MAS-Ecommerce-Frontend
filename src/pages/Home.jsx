@@ -384,21 +384,9 @@ function Home() {
                             </h3>
 
                             <p>
-                                Category:
-                                {" "}
-                                {product.category}
-                            </p>
-
-                            <p>
                                 Price:
                                 {" "}
                                 ₹{product.price}
-                            </p>
-
-                            <p>
-                                Stock:
-                                {" "}
-                                {product.quantity}
                             </p>
 
                             <button
