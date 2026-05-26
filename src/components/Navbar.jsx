@@ -42,7 +42,7 @@ function Navbar() {
         <nav style={navbarStyle}>
             <div>
                 <Link to="/home" style={logoLinkStyle}>
-                    MAS
+                    𝕄𝔸𝕊
                 </Link>
             </div>
 

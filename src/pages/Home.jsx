@@ -1,152 +1,43 @@
 import { useEffect, useState } from "react";
 
-import { getAdvancedProducts }
-from "../services/productService";
+import { useNavigate } from "react-router-dom";
 
-import { addProductToCart }
-from "../services/cartService";
+import { getAllProducts } from "../services/productService";
+
+import { addProductToCart } from "../services/cartService";
+
+import { toast } from "react-toastify";
 
 function Home() {
 
-    const [products, setProducts] =
-        useState([]);
+    const [products, setProducts] = useState([]);
 
-    const [searchName, setSearchName] =
-        useState("");
-
-    const [category, setCategory] =
-        useState("");
-
-    const [minPrice, setMinPrice] =
-        useState("");
-
-    const [maxPrice, setMaxPrice] =
-        useState("");
-
-    const [sortOption, setSortOption] =
-        useState("");
-
-    const [page, setPage] =
-        useState(0);
-
-    const [totalPages, setTotalPages] =
-        useState(0);
-
-    const size = 25;
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchProducts();
-    }, [
-        page,
-        category,
-        sortOption
-    ]);
+    }, []);
 
     const fetchProducts = async () => {
 
         try {
 
-            let sort = "id";
-
-            let direction = "asc";
-
-            if (sortOption !== "") {
-
-                [sort, direction] =
-                    sortOption.split("-");
-            }
-
             const data =
-                await getAdvancedProducts({
-                    category,
-                    name: searchName,
-                    minPrice,
-                    maxPrice,
-                    page,
-                    size,
-                    sort,
-                    direction
-                });
+                await getAllProducts();
 
-            setProducts(data.content);
-
-            setTotalPages(data.totalPages);
+            setProducts(data);
 
         } catch (error) {
 
             console.log(error);
-        }
-    };
 
-    const handleSearch = async () => {
-
-        setPage(0);
-
-        await fetchProducts();
-    };
-
-    const handleCategoryFilter = (
-        value
-    ) => {
-
-        setCategory(value);
-
-        setPage(0);
-    };
-
-    const handlePriceFilter =
-        async () => {
-
-        if (
-            minPrice === ""
-            || maxPrice === ""
-        ) {
-
-            alert(
-                "Please enter both minimum and maximum price"
+            toast.error(
+                "Failed to load products"
             );
-
-            return;
         }
-
-        setPage(0);
-
-        await fetchProducts();
     };
 
-    const handleSort = (value) => {
-
-        setSortOption(value);
-
-        setPage(0);
-    };
-
-    const handleClear = async () => {
-
-        setSearchName("");
-
-        setCategory("");
-
-        setMinPrice("");
-
-        setMaxPrice("");
-
-        setSortOption("");
-
-        setPage(0);
-
-        const data =
-            await getAdvancedProducts({
-                page: 0,
-                size
-            });
-
-        setProducts(data.content);
-
-        setTotalPages(data.totalPages);
-    };
-
-    const addToCart = async (
+    const handleAddToCart = async (
         productId
     ) => {
 
@@ -155,9 +46,11 @@ function Home() {
 
         if (!token) {
 
-            alert(
-                "To add product to cart, you have to login first"
+            toast.error(
+                "Please login first"
             );
+
+            navigate("/login");
 
             return;
         }
@@ -170,289 +63,88 @@ function Home() {
                     1
                 );
 
-            alert(response);
+            toast.success(response);
 
         } catch (error) {
 
             console.log(error);
 
-            alert(
-                "Add to cart failed"
+            toast.error(
+                "Failed to add to cart"
             );
         }
     };
 
     return (
-        <div
-            style={{
-                padding: "20px",
-                paddingTop: "90px"
-            }}
-        >
+        <div style={pageStyle}>
 
-            <div
-                style={{
-                    display: "flex",
-                    gap: "12px",
-                    alignItems: "center",
-                    flexWrap: "wrap",
-                    marginBottom: "25px",
-                    padding: "15px",
-                    backgroundColor: "#f3f4f6",
-                    borderRadius: "10px"
-                }}
-            >
+            <h1 style={titleStyle}>
+                Explore Products
+            </h1>
 
-                <input
-                    type="text"
-                    placeholder="Search product"
-                    value={searchName}
-                    onChange={(e) =>
-                        setSearchName(
-                            e.target.value
-                        )
-                    }
-                    style={inputStyle}
-                />
-
-                <button
-                    onClick={handleSearch}
-                    style={buttonStyle}
-                >
-                    Search
-                </button>
-
-                <select
-                    value={category}
-                    onChange={(e) =>
-                        handleCategoryFilter(
-                            e.target.value
-                        )
-                    }
-                    style={inputStyle}
-                >
-                    <option value="">
-                        All Categories
-                    </option>
-
-                    <option value="Mobile">
-                        Mobile
-                    </option>
-
-                    <option value="Laptop">
-                        Laptop
-                    </option>
-
-                    <option value="Electronics">
-                        Electronics
-                    </option>
-
-                    <option value="Fashion">
-                        Fashion
-                    </option>
-
-                </select>
-
-                <input
-                    type="number"
-                    placeholder="Min Price"
-                    value={minPrice}
-                    onChange={(e) =>
-                        setMinPrice(
-                            e.target.value
-                        )
-                    }
-                    style={inputStyle}
-                />
-
-                <input
-                    type="number"
-                    placeholder="Max Price"
-                    value={maxPrice}
-                    onChange={(e) =>
-                        setMaxPrice(
-                            e.target.value
-                        )
-                    }
-                    style={inputStyle}
-                />
-
-                <button
-                    onClick={handlePriceFilter}
-                    style={buttonStyle}
-                >
-                    Filter
-                </button>
-
-                <select
-                    value={sortOption}
-                    onChange={(e) =>
-                        handleSort(
-                            e.target.value
-                        )
-                    }
-                    style={inputStyle}
-                >
-                    <option value="">
-                        Default Sorting
-                    </option>
-
-                    <option value="price-asc">
-                        Price Low to High
-                    </option>
-
-                    <option value="price-desc">
-                        Price High to Low
-                    </option>
-
-                    <option value="name-asc">
-                        Name A-Z
-                    </option>
-
-                    <option value="name-desc">
-                        Name Z-A
-                    </option>
-
-                </select>
-
-                <button
-                    onClick={handleClear}
-                    style={{
-                        ...buttonStyle,
-                        backgroundColor: "#6b7280"
-                    }}
-                >
-                    Clear
-                </button>
-
-            </div>
-
-            <div
-                style={{
-                    display: "grid",
-                    gridTemplateColumns:
-                        "repeat(5, 1fr)",
-                    gap: "20px"
-                }}
-            >
+            <div style={productsGridStyle}>
 
                 {
                     products.map(
                         (product) => (
 
-                        <div
-                            key={product.id}
-                            style={{
-                                border:
-                                    "1px solid #ccc",
-                                padding: "10px",
-                                textAlign: "center",
-                                minHeight: "380px",
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "space-between",
-                                borderRadius: "10px",
-                                backgroundColor: "white",
-                                boxShadow:
-                                    "0 2px 8px rgba(0,0,0,0.1)"
-                            }}
-                        >
-
-                            <img
-                                src={
-                                    product.imageUrl
-                                    || "https://placehold.co/200x200"
-                                }
-                                alt={
-                                    product.name
-                                }
-                                style={{
-                                    width: "200px",
-                                    height: "200px",
-                                    objectFit: "cover",
-                                    margin: "0 auto",
-                                    borderRadius: "8px"
-                                }}
-                                onError={(e) => {
-                                    e.target.src =
-                                    "https://placehold.co/200x200";
-                                }}
-                            />
-
-                            <h3>
-                                {product.name}
-                            </h3>
-
-                            <p>
-                                Price:
-                                {" "}
-                                ₹{product.price}
-                            </p>
-
-                            <button
-                                onClick={() =>
-                                    addToCart(
-                                        product.id
-                                    )
-                                }
-                                style={buttonStyle}
+                            <div
+                                key={product.id}
+                                style={productCardStyle}
                             >
-                                Add to Cart
-                            </button>
 
-                        </div>
-                    ))
+                                <img
+                                    src={
+                                        product.imageUrl ||
+                                        "https://placehold.co/300x300"
+                                    }
+                                    alt={product.name}
+                                    style={imageStyle}
+                                    onClick={() =>
+                                        navigate(
+                                            `/product/${product.id}`
+                                        )
+                                    }
+                                    onError={(e) => {
+                                        e.target.src =
+                                            "https://placehold.co/300x300";
+                                    }}
+                                />
+
+                                <div style={productInfoStyle}>
+
+                                    <h3
+                                        style={productNameStyle}
+                                        onClick={() =>
+                                            navigate(
+                                                `/product/${product.id}`
+                                            )
+                                        }
+                                    >
+                                        {product.name}
+                                    </h3>
+
+                                    <p style={priceStyle}>
+                                        ₹{product.price}
+                                    </p>
+
+                                    <button
+                                        style={buttonStyle}
+                                        onClick={() =>
+                                            handleAddToCart(
+                                                product.id
+                                            )
+                                        }
+                                    >
+                                        Add to Cart
+                                    </button>
+
+                                </div>
+
+                            </div>
+                        )
+                    )
                 }
-
-            </div>
-
-            <br />
-
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap: "20px",
-                    marginTop: "20px"
-                }}
-            >
-
-                <button
-                    disabled={page === 0}
-                    onClick={() =>
-                        setPage(page - 1)
-                    }
-                    style={buttonStyle}
-                >
-                    Previous
-                </button>
-
-                <span>
-                    Page
-                    {" "}
-                    {
-                        totalPages === 0
-                        ? 0
-                        : page + 1
-                    }
-                    {" "}
-                    of
-                    {" "}
-                    {totalPages}
-                </span>
-
-                <button
-                    disabled={
-                        page >= totalPages - 1
-                    }
-                    onClick={() =>
-                        setPage(page + 1)
-                    }
-                    style={buttonStyle}
-                >
-                    Next
-                </button>
 
             </div>
 
@@ -460,18 +152,66 @@ function Home() {
     );
 }
 
-const inputStyle = {
-    padding: "10px",
-    border: "1px solid #ccc",
-    borderRadius: "6px"
+const pageStyle = {
+    padding: "20px",
+    paddingTop: "90px",
+    backgroundColor: "#f9fafb",
+    minHeight: "100vh"
+};
+
+const titleStyle = {
+    marginBottom: "25px",
+    color: "#111827"
+};
+
+const productsGridStyle = {
+    display: "grid",
+    gridTemplateColumns:
+        "repeat(auto-fit, minmax(220px, 1fr))",
+    gap: "25px"
+};
+
+const productCardStyle = {
+    backgroundColor: "white",
+    borderRadius: "14px",
+    overflow: "hidden",
+    boxShadow:
+        "0 2px 12px rgba(0,0,0,0.08)",
+    transition: "0.3s"
+};
+
+const imageStyle = {
+    width: "100%",
+    height: "240px",
+    objectFit: "cover",
+    cursor: "pointer"
+};
+
+const productInfoStyle = {
+    padding: "18px"
+};
+
+const productNameStyle = {
+    marginBottom: "10px",
+    color: "#111827",
+    cursor: "pointer"
+};
+
+const priceStyle = {
+    fontSize: "18px",
+    fontWeight: "bold",
+    color: "#2563eb",
+    marginBottom: "15px"
 };
 
 const buttonStyle = {
-    padding: "10px 15px",
+    width: "100%",
+    padding: "11px",
     border: "none",
-    backgroundColor: "#2563eb",
+    borderRadius: "8px",
+    backgroundColor: "#16a34a",
     color: "white",
-    borderRadius: "6px",
+    fontWeight: "bold",
     cursor: "pointer"
 };
 
