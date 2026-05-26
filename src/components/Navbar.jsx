@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { getProfile } from "../services/profileService";
 
@@ -10,6 +10,10 @@ function Navbar() {
     const [profileName, setProfileName] = useState(
         localStorage.getItem("profileName") || ""
     );
+
+    const [searchText, setSearchText] = useState("");
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchProfileName = async () => {
@@ -30,6 +34,17 @@ function Navbar() {
         fetchProfileName();
     }, [token]);
 
+    const handleSearch = (e) => {
+        e.preventDefault();
+
+        if (searchText.trim() === "") {
+            navigate("/home");
+            return;
+        }
+
+        navigate(`/home?search=${encodeURIComponent(searchText)}`);
+    };
+
     const getInitial = (name) => {
         if (!name || name.trim() === "") {
             return "U";
@@ -42,9 +57,23 @@ function Navbar() {
         <nav style={navbarStyle}>
             <div>
                 <Link to="/home" style={logoLinkStyle}>
-                    𝕄𝔸𝕊
+                    MAS
                 </Link>
             </div>
+
+            <form onSubmit={handleSearch} style={searchFormStyle}>
+                <input
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                    style={searchInputStyle}
+                />
+
+                <button type="submit" style={searchButtonStyle}>
+                    Search
+                </button>
+            </form>
 
             <div style={rightSectionStyle}>
                 <Link to="/home" style={navItemStyle}>
@@ -84,9 +113,10 @@ const navbarStyle = {
     right: 0,
     height: "70px",
     backgroundColor: "#111827",
-    display: "flex",
-    justifyContent: "space-between",
+    display: "grid",
+    gridTemplateColumns: "160px 1fr auto",
     alignItems: "center",
+    gap: "25px",
     padding: "0 35px",
     zIndex: 1000,
     boxShadow: "0 2px 10px rgba(0,0,0,0.12)"
@@ -100,10 +130,36 @@ const logoLinkStyle = {
     letterSpacing: "1px"
 };
 
+const searchFormStyle = {
+    display: "flex",
+    width: "100%",
+    maxWidth: "520px",
+    justifySelf: "center"
+};
+
+const searchInputStyle = {
+    flex: 1,
+    padding: "10px 14px",
+    border: "none",
+    borderRadius: "8px 0 0 8px",
+    fontSize: "15px",
+    outline: "none"
+};
+
+const searchButtonStyle = {
+    padding: "10px 16px",
+    border: "none",
+    backgroundColor: "#2563eb",
+    color: "white",
+    borderRadius: "0 8px 8px 0",
+    fontWeight: "bold",
+    cursor: "pointer"
+};
+
 const rightSectionStyle = {
     display: "flex",
     alignItems: "center",
-    gap: "24px"
+    gap: "22px"
 };
 
 const navItemStyle = {

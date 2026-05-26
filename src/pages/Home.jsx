@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+    useNavigate,
+    useSearchParams
+} from "react-router-dom";
 
 import { getAdvancedProducts } from "../services/productService";
 import { addProductToCart } from "../services/cartService";
@@ -9,7 +12,10 @@ import { toast } from "react-toastify";
 function Home() {
     const [products, setProducts] = useState([]);
 
-    const [searchName, setSearchName] = useState("");
+    const [searchParams] = useSearchParams();
+
+    const searchFromNavbar = searchParams.get("search") || "";
+
     const [category, setCategory] = useState("");
     const [minPrice, setMinPrice] = useState("");
     const [maxPrice, setMaxPrice] = useState("");
@@ -24,7 +30,12 @@ function Home() {
 
     useEffect(() => {
         fetchProducts();
-    }, [page, category, sortOption]);
+    }, [
+        page,
+        category,
+        sortOption,
+        searchFromNavbar
+    ]);
 
     const fetchProducts = async () => {
         try {
@@ -37,7 +48,7 @@ function Home() {
 
             const data = await getAdvancedProducts({
                 category,
-                name: searchName,
+                name: searchFromNavbar,
                 minPrice,
                 maxPrice,
                 page,
@@ -50,13 +61,9 @@ function Home() {
             setTotalPages(data.totalPages);
         } catch (error) {
             console.log(error);
+
             toast.error("Failed to load products");
         }
-    };
-
-    const handleSearch = async () => {
-        setPage(0);
-        await fetchProducts();
     };
 
     const handleCategoryFilter = (value) => {
@@ -80,25 +87,13 @@ function Home() {
     };
 
     const handleClear = async () => {
-        setSearchName("");
         setCategory("");
         setMinPrice("");
         setMaxPrice("");
         setSortOption("");
         setPage(0);
 
-        try {
-            const data = await getAdvancedProducts({
-                page: 0,
-                size
-            });
-
-            setProducts(data.content);
-            setTotalPages(data.totalPages);
-        } catch (error) {
-            console.log(error);
-            toast.error("Failed to load products");
-        }
+        navigate("/home");
     };
 
     const handleAddToCart = async (productId) => {
@@ -116,6 +111,7 @@ function Home() {
             toast.success(response);
         } catch (error) {
             console.log(error);
+
             toast.error("Failed to add to cart");
         }
     };
@@ -123,21 +119,11 @@ function Home() {
     return (
         <div style={pageStyle}>
             <div style={filterBarStyle}>
-                <input
-                    type="text"
-                    placeholder="Search product"
-                    value={searchName}
-                    onChange={(e) => setSearchName(e.target.value)}
-                    style={inputStyle}
-                />
-
-                <button onClick={handleSearch} style={buttonStyle}>
-                    Search
-                </button>
-
                 <select
                     value={category}
-                    onChange={(e) => handleCategoryFilter(e.target.value)}
+                    onChange={(e) =>
+                        handleCategoryFilter(e.target.value)
+                    }
                     style={inputStyle}
                 >
                     <option value="">All Categories</option>
@@ -151,7 +137,9 @@ function Home() {
                     type="number"
                     placeholder="Min Price"
                     value={minPrice}
-                    onChange={(e) => setMinPrice(e.target.value)}
+                    onChange={(e) =>
+                        setMinPrice(e.target.value)
+                    }
                     style={inputStyle}
                 />
 
@@ -159,17 +147,24 @@ function Home() {
                     type="number"
                     placeholder="Max Price"
                     value={maxPrice}
-                    onChange={(e) => setMaxPrice(e.target.value)}
+                    onChange={(e) =>
+                        setMaxPrice(e.target.value)
+                    }
                     style={inputStyle}
                 />
 
-                <button onClick={handlePriceFilter} style={buttonStyle}>
+                <button
+                    onClick={handlePriceFilter}
+                    style={buttonStyle}
+                >
                     Filter
                 </button>
 
                 <select
                     value={sortOption}
-                    onChange={(e) => handleSort(e.target.value)}
+                    onChange={(e) =>
+                        handleSort(e.target.value)
+                    }
                     style={inputStyle}
                 >
                     <option value="">Default Sorting</option>
@@ -192,7 +187,10 @@ function Home() {
 
             <div style={productsGridStyle}>
                 {products.map((product) => (
-                    <div key={product.id} style={productCardStyle}>
+                    <div
+                        key={product.id}
+                        style={productCardStyle}
+                    >
                         <img
                             src={
                                 product.imageUrl ||
@@ -200,7 +198,9 @@ function Home() {
                             }
                             alt={product.name}
                             style={imageStyle}
-                            onClick={() => navigate(`/product/${product.id}`)}
+                            onClick={() =>
+                                navigate(`/product/${product.id}`)
+                            }
                             onError={(e) => {
                                 e.target.src =
                                     "https://placehold.co/300x300";
@@ -217,11 +217,15 @@ function Home() {
                                 {product.name}
                             </h3>
 
-                            <p style={priceStyle}>₹{product.price}</p>
+                            <p style={priceStyle}>
+                                ₹{product.price}
+                            </p>
 
                             <button
                                 style={buttonStyle}
-                                onClick={() => handleAddToCart(product.id)}
+                                onClick={() =>
+                                    handleAddToCart(product.id)
+                                }
                             >
                                 Add to Cart
                             </button>
@@ -291,7 +295,9 @@ const buttonStyle = {
 
 const productsGridStyle = {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+    gridTemplateColumns:
+        "repeat(auto-fill, minmax(220px, 220px))",
+    justifyContent: "start",
     gap: "25px"
 };
 
