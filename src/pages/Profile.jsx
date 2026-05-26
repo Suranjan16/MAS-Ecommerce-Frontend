@@ -8,121 +8,88 @@ import {
 import { toast } from "react-toastify";
 
 function Profile() {
-
     const [profile, setProfile] = useState({
         name: "",
         dob: "",
         gender: ""
     });
 
-    const [loading, setLoading] =
-        useState(false);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         fetchProfile();
     }, []);
 
     const fetchProfile = async () => {
-
         try {
-
-            const data =
-                await getProfile();
+            const data = await getProfile();
 
             setProfile(data);
 
+            localStorage.setItem(
+                "profileName",
+                data.name || "U"
+            );
         } catch (error) {
-
             console.log(error);
 
-            toast.error(
-                "Failed to load profile"
-            );
+            toast.error("Failed to load profile");
         }
     };
 
     const handleChange = (e) => {
-
         setProfile({
             ...profile,
-            [e.target.name]:
-                e.target.value
+            [e.target.name]: e.target.value
         });
     };
 
     const handleSubmit = async (e) => {
-
         e.preventDefault();
 
         setLoading(true);
 
         try {
+            const response = await updateProfile(profile);
 
-            const response =
-                await updateProfile(
-                    profile
-                );
-
-            toast.success(response);
-
-        } catch (error) {
-
-            console.log(error);
-
-            toast.error(
-                "Failed to update profile"
+            localStorage.setItem(
+                "profileName",
+                profile.name || "U"
             );
 
-        } finally {
+            toast.success(response);
+        } catch (error) {
+            console.log(error);
 
+            toast.error("Failed to update profile");
+        } finally {
             setLoading(false);
         }
     };
 
     const getInitial = (name) => {
-
-        if (
-            !name ||
-            name.trim() === ""
-        ) {
+        if (!name || name.trim() === "") {
             return "U";
         }
 
-        return name
-            .trim()
-            .charAt(0)
-            .toUpperCase();
+        return name.trim().charAt(0).toUpperCase();
     };
 
     return (
         <div style={pageStyle}>
-
             <div style={cardStyle}>
-
                 <div style={avatarStyle}>
-                    {
-                        getInitial(
-                            profile.name
-                        )
-                    }
+                    {getInitial(profile.name)}
                 </div>
 
-                <h1 style={titleStyle}>
-                    My Profile
-                </h1>
+                <h1 style={titleStyle}>My Profile</h1>
 
                 <p style={subtitleStyle}>
                     Manage your personal details
                 </p>
 
-                <form
-                    onSubmit={
-                        handleSubmit
-                    }
-                >
-
+                <form onSubmit={handleSubmit}>
                     <div style={fieldStyle}>
-
                         <label style={labelStyle}>
                             Name
                         </label>
@@ -135,11 +102,9 @@ function Profile() {
                             placeholder="Enter your name"
                             style={inputStyle}
                         />
-
                     </div>
 
                     <div style={fieldStyle}>
-
                         <label style={labelStyle}>
                             Date of Birth
                         </label>
@@ -151,11 +116,9 @@ function Profile() {
                             onChange={handleChange}
                             style={inputStyle}
                         />
-
                     </div>
 
                     <div style={fieldStyle}>
-
                         <label style={labelStyle}>
                             Gender
                         </label>
@@ -181,9 +144,7 @@ function Profile() {
                             <option value="Other">
                                 Other
                             </option>
-
                         </select>
-
                     </div>
 
                     <button
@@ -191,27 +152,16 @@ function Profile() {
                         disabled={loading}
                         style={{
                             ...buttonStyle,
-                            opacity:
-                                loading
-                                    ? 0.7
-                                    : 1,
-                            cursor:
-                                loading
-                                    ? "not-allowed"
-                                    : "pointer"
+                            opacity: loading ? 0.7 : 1,
+                            cursor: loading
+                                ? "not-allowed"
+                                : "pointer"
                         }}
                     >
-                        {
-                            loading
-                                ? "Saving..."
-                                : "Save Profile"
-                        }
+                        {loading ? "Saving..." : "Save Profile"}
                     </button>
-
                 </form>
-
             </div>
-
         </div>
     );
 }
@@ -230,8 +180,7 @@ const cardStyle = {
     padding: "30px",
     backgroundColor: "white",
     borderRadius: "14px",
-    boxShadow:
-        "0 2px 14px rgba(0,0,0,0.12)"
+    boxShadow: "0 2px 14px rgba(0,0,0,0.12)"
 };
 
 const avatarStyle = {
