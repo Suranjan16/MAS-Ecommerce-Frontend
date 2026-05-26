@@ -125,21 +125,12 @@ function Navbar() {
                 {
                     !token ? (
 
-                        <>
-                            <Link
-                                to="/login"
-                                style={loginButtonStyle}
-                            >
-                                Login
-                            </Link>
-
-                            <Link
-                                to="/signup"
-                                style={signupButtonStyle}
-                            >
-                                Signup
-                            </Link>
-                        </>
+                        <Link
+                            to="/login"
+                            style={loginButtonStyle}
+                        >
+                            Login
+                        </Link>
 
                     ) : (
 
@@ -215,15 +206,6 @@ const profileAvatarStyle = {
 };
 
 const loginButtonStyle = {
-    padding: "10px 16px",
-    borderRadius: "8px",
-    backgroundColor: "#2563eb",
-    color: "white",
-    textDecoration: "none",
-    fontWeight: "bold"
-};
-
-const signupButtonStyle = {
     padding: "10px 16px",
     borderRadius: "8px",
     backgroundColor: "#2563eb",
