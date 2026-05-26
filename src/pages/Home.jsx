@@ -13,8 +13,9 @@ function Home() {
     const [products, setProducts] = useState([]);
 
     const [searchParams] = useSearchParams();
-
     const searchFromNavbar = searchParams.get("search") || "";
+
+    const [showFilters, setShowFilters] = useState(false);
 
     const [category, setCategory] = useState("");
     const [minPrice, setMinPrice] = useState("");
@@ -25,17 +26,11 @@ function Home() {
     const [totalPages, setTotalPages] = useState(0);
 
     const size = 25;
-
     const navigate = useNavigate();
 
     useEffect(() => {
         fetchProducts();
-    }, [
-        page,
-        category,
-        sortOption,
-        searchFromNavbar
-    ]);
+    }, [page, searchFromNavbar]);
 
     const fetchProducts = async () => {
         try {
@@ -61,32 +56,16 @@ function Home() {
             setTotalPages(data.totalPages);
         } catch (error) {
             console.log(error);
-
             toast.error("Failed to load products");
         }
     };
 
-    const handleCategoryFilter = (value) => {
-        setCategory(value);
-        setPage(0);
-    };
-
-    const handlePriceFilter = async () => {
-        if (minPrice === "" || maxPrice === "") {
-            toast.error("Please enter both minimum and maximum price");
-            return;
-        }
-
+    const handleApplyFilters = async () => {
         setPage(0);
         await fetchProducts();
     };
 
-    const handleSort = (value) => {
-        setSortOption(value);
-        setPage(0);
-    };
-
-    const handleClear = async () => {
+    const handleClearFilters = async () => {
         setCategory("");
         setMinPrice("");
         setMaxPrice("");
@@ -94,6 +73,19 @@ function Home() {
         setPage(0);
 
         navigate("/home");
+
+        try {
+            const data = await getAdvancedProducts({
+                page: 0,
+                size
+            });
+
+            setProducts(data.content);
+            setTotalPages(data.totalPages);
+        } catch (error) {
+            console.log(error);
+            toast.error("Failed to load products");
+        }
     };
 
     const handleAddToCart = async (productId) => {
@@ -107,90 +99,88 @@ function Home() {
 
         try {
             const response = await addProductToCart(productId, 1);
-
             toast.success(response);
         } catch (error) {
             console.log(error);
-
             toast.error("Failed to add to cart");
         }
     };
 
     return (
         <div style={pageStyle}>
-            <div style={filterBarStyle}>
-                <select
-                    value={category}
-                    onChange={(e) =>
-                        handleCategoryFilter(e.target.value)
-                    }
-                    style={inputStyle}
-                >
-                    <option value="">All Categories</option>
-                    <option value="Mobile">Mobile</option>
-                    <option value="Laptop">Laptop</option>
-                    <option value="Electronics">Electronics</option>
-                    <option value="Fashion">Fashion</option>
-                </select>
-
-                <input
-                    type="number"
-                    placeholder="Min Price"
-                    value={minPrice}
-                    onChange={(e) =>
-                        setMinPrice(e.target.value)
-                    }
-                    style={inputStyle}
-                />
-
-                <input
-                    type="number"
-                    placeholder="Max Price"
-                    value={maxPrice}
-                    onChange={(e) =>
-                        setMaxPrice(e.target.value)
-                    }
-                    style={inputStyle}
-                />
-
+            <div style={filterHeaderStyle}>
                 <button
-                    onClick={handlePriceFilter}
-                    style={buttonStyle}
+                    onClick={() => setShowFilters(!showFilters)}
+                    style={filterToggleButtonStyle}
                 >
-                    Filter
-                </button>
-
-                <select
-                    value={sortOption}
-                    onChange={(e) =>
-                        handleSort(e.target.value)
-                    }
-                    style={inputStyle}
-                >
-                    <option value="">Default Sorting</option>
-                    <option value="price-asc">Price Low to High</option>
-                    <option value="price-desc">Price High to Low</option>
-                    <option value="name-asc">Name A-Z</option>
-                    <option value="name-desc">Name Z-A</option>
-                </select>
-
-                <button
-                    onClick={handleClear}
-                    style={{
-                        ...buttonStyle,
-                        backgroundColor: "#6b7280"
-                    }}
-                >
-                    Clear
+                    {showFilters ? "Hide Filters" : "Filter"}
                 </button>
             </div>
 
+            {showFilters && (
+                <div style={filterPanelStyle}>
+                    <select
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        style={inputStyle}
+                    >
+                        <option value="">All Categories</option>
+                        <option value="Mobile">Mobile</option>
+                        <option value="Laptop">Laptop</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Fashion">Fashion</option>
+                    </select>
+
+                    <input
+                        type="number"
+                        placeholder="Min Price"
+                        value={minPrice}
+                        onChange={(e) => setMinPrice(e.target.value)}
+                        style={inputStyle}
+                    />
+
+                    <input
+                        type="number"
+                        placeholder="Max Price"
+                        value={maxPrice}
+                        onChange={(e) => setMaxPrice(e.target.value)}
+                        style={inputStyle}
+                    />
+
+                    <select
+                        value={sortOption}
+                        onChange={(e) => setSortOption(e.target.value)}
+                        style={inputStyle}
+                    >
+                        <option value="">Default Sorting</option>
+                        <option value="price-asc">Price Low to High</option>
+                        <option value="price-desc">Price High to Low</option>
+                        <option value="name-asc">Name A-Z</option>
+                        <option value="name-desc">Name Z-A</option>
+                    </select>
+
+                    <button
+                        onClick={handleApplyFilters}
+                        style={buttonStyle}
+                    >
+                        Apply Filter
+                    </button>
+
+                    <button
+                        onClick={handleClearFilters}
+                        style={{
+                            ...buttonStyle,
+                            backgroundColor: "#6b7280"
+                        }}
+                    >
+                        Clear
+                    </button>
+                </div>
+            )}
+
             <div style={productsGridStyle}>
                 {products.map((product) => (
-                    <div
-                        key={product.id}
-                        style={productCardStyle}
-                    >
+                    <div key={product.id} style={productCardStyle}>
                         <img
                             src={
                                 product.imageUrl ||
@@ -217,9 +207,7 @@ function Home() {
                                 {product.name}
                             </h3>
 
-                            <p style={priceStyle}>
-                                ₹{product.price}
-                            </p>
+                            <p style={priceStyle}>₹{product.price}</p>
 
                             <button
                                 style={buttonStyle}
@@ -238,7 +226,11 @@ function Home() {
                 <button
                     disabled={page === 0}
                     onClick={() => setPage(page - 1)}
-                    style={buttonStyle}
+                    style={{
+                        ...buttonStyle,
+                        opacity: page === 0 ? 0.6 : 1,
+                        cursor: page === 0 ? "not-allowed" : "pointer"
+                    }}
                 >
                     Previous
                 </button>
@@ -250,7 +242,14 @@ function Home() {
                 <button
                     disabled={page >= totalPages - 1}
                     onClick={() => setPage(page + 1)}
-                    style={buttonStyle}
+                    style={{
+                        ...buttonStyle,
+                        opacity: page >= totalPages - 1 ? 0.6 : 1,
+                        cursor:
+                            page >= totalPages - 1
+                                ? "not-allowed"
+                                : "pointer"
+                    }}
                 >
                     Next
                 </button>
@@ -266,7 +265,23 @@ const pageStyle = {
     minHeight: "100vh"
 };
 
-const filterBarStyle = {
+const filterHeaderStyle = {
+    display: "flex",
+    justifyContent: "flex-end",
+    marginBottom: "15px"
+};
+
+const filterToggleButtonStyle = {
+    padding: "10px 18px",
+    border: "none",
+    backgroundColor: "#111827",
+    color: "white",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontWeight: "bold"
+};
+
+const filterPanelStyle = {
     display: "flex",
     gap: "12px",
     alignItems: "center",
@@ -295,8 +310,7 @@ const buttonStyle = {
 
 const productsGridStyle = {
     display: "grid",
-    gridTemplateColumns:
-        "repeat(auto-fill, minmax(220px, 220px))",
+    gridTemplateColumns: "repeat(auto-fill, minmax(220px, 220px))",
     justifyContent: "start",
     gap: "25px"
 };
@@ -309,7 +323,7 @@ const productCardStyle = {
 };
 
 const imageStyle = {
-    width: "100%",
+    width: "220px",
     height: "240px",
     objectFit: "cover",
     cursor: "pointer"
