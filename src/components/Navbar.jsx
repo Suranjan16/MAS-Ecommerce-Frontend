@@ -1,13 +1,16 @@
 import { Link, useNavigate } from "react-router-dom";
+
 import { toast } from "react-toastify";
 
 function Navbar() {
 
-    const token = localStorage.getItem("token");
-
-    const role = localStorage.getItem("role");
-
     const navigate = useNavigate();
+
+    const token =
+        localStorage.getItem("token");
+
+    const role =
+        localStorage.getItem("role");
 
     const handleLogout = () => {
 
@@ -15,7 +18,9 @@ function Navbar() {
 
         localStorage.removeItem("role");
 
-        toast.success("Logout successful");
+        toast.success(
+            "Logout successful"
+        );
 
         navigate("/login");
 
@@ -23,35 +28,20 @@ function Navbar() {
     };
 
     return (
-        <div
-            style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "15px 30px",
-                backgroundColor: "#111827",
-                color: "white",
-                position: "sticky",
-                top: 0,
-                zIndex: 1000
-            }}
-        >
+        <nav style={navbarStyle}>
 
-            <h2
-                style={{
-                    margin: 0
-                }}
-            >
-                MAS
-            </h2>
+            <div style={logoStyle}>
 
-            <div
-                style={{
-                    display: "flex",
-                    gap: "20px",
-                    alignItems: "center"
-                }}
-            >
+                <Link
+                    to="/home"
+                    style={logoLinkStyle}
+                >
+                    MAS
+                </Link>
+
+            </div>
+
+            <div style={navLinksStyle}>
 
                 <Link
                     to="/home"
@@ -62,37 +52,55 @@ function Navbar() {
 
                 {
                     token && (
-                        <>
-                            <Link
-                                to="/cart"
-                                style={linkStyle}
-                            >
-                                Cart
-                            </Link>
 
-                            <Link
-                                to="/orders"
-                                style={linkStyle}
-                            >
-                                Orders
-                            </Link>
-                        </>
+                        <Link
+                            to="/cart"
+                            style={linkStyle}
+                        >
+                            Cart
+                        </Link>
+                    )
+                }
+
+                {
+                    token && (
+
+                        <Link
+                            to="/orders"
+                            style={linkStyle}
+                        >
+                            Orders
+                        </Link>
                     )
                 }
 
                 {
                     role === "ADMIN" && (
+
                         <Link
                             to="/admin"
                             style={linkStyle}
                         >
-                            Admin Dashboard
+                            Admin
+                        </Link>
+                    )
+                }
+
+                {
+                    token && (
+
+                        <Link
+                            to="/profile"
+                            style={profileStyle}
+                        >
+                            Profile
                         </Link>
                     )
                 }
 
                 {
                     !token ? (
+
                         <>
                             <Link
                                 to="/login"
@@ -103,22 +111,17 @@ function Navbar() {
 
                             <Link
                                 to="/signup"
-                                style={linkStyle}
+                                style={signupButtonStyle}
                             >
                                 Signup
                             </Link>
                         </>
+
                     ) : (
+
                         <button
                             onClick={handleLogout}
-                            style={{
-                                padding: "8px 14px",
-                                border: "none",
-                                backgroundColor: "#ef4444",
-                                color: "white",
-                                borderRadius: "6px",
-                                cursor: "pointer"
-                            }}
+                            style={logoutButtonStyle}
                         >
                             Logout
                         </button>
@@ -127,14 +130,79 @@ function Navbar() {
 
             </div>
 
-        </div>
+        </nav>
     );
 }
 
-const linkStyle = {
+const navbarStyle = {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: "70px",
+    backgroundColor: "#111827",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "0 30px",
+    zIndex: 1000,
+    boxShadow:
+        "0 2px 10px rgba(0,0,0,0.12)"
+};
+
+const logoStyle = {
+    display: "flex",
+    alignItems: "center"
+};
+
+const logoLinkStyle = {
     color: "white",
     textDecoration: "none",
-    fontWeight: "500"
+    fontSize: "28px",
+    fontWeight: "bold",
+    letterSpacing: "1px"
+};
+
+const navLinksStyle = {
+    display: "flex",
+    alignItems: "center",
+    gap: "18px"
+};
+
+const linkStyle = {
+    color: "#e5e7eb",
+    textDecoration: "none",
+    fontWeight: "500",
+    fontSize: "15px"
+};
+
+const profileStyle = {
+    padding: "10px 14px",
+    borderRadius: "50px",
+    backgroundColor: "#2563eb",
+    color: "white",
+    textDecoration: "none",
+    fontWeight: "bold",
+    fontSize: "14px"
+};
+
+const signupButtonStyle = {
+    padding: "10px 16px",
+    borderRadius: "8px",
+    backgroundColor: "#2563eb",
+    color: "white",
+    textDecoration: "none",
+    fontWeight: "bold"
+};
+
+const logoutButtonStyle = {
+    padding: "10px 16px",
+    border: "none",
+    borderRadius: "8px",
+    backgroundColor: "#ef4444",
+    color: "white",
+    fontWeight: "bold",
+    cursor: "pointer"
 };
 
 export default Navbar;
