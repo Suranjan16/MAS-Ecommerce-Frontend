@@ -1,11 +1,34 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+
+import { getProfile } from "../services/profileService";
 
 function Navbar() {
     const token = localStorage.getItem("token");
-
     const role = localStorage.getItem("role");
 
-    const profileName = localStorage.getItem("profileName");
+    const [profileName, setProfileName] = useState(
+        localStorage.getItem("profileName") || ""
+    );
+
+    useEffect(() => {
+        const fetchProfileName = async () => {
+            if (!token) return;
+
+            try {
+                const data = await getProfile();
+
+                if (data.name) {
+                    localStorage.setItem("profileName", data.name);
+                    setProfileName(data.name);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchProfileName();
+    }, [token]);
 
     const getInitial = (name) => {
         if (!name || name.trim() === "") {
@@ -17,39 +40,34 @@ function Navbar() {
 
     return (
         <nav style={navbarStyle}>
-            <div style={logoStyle}>
+            <div>
                 <Link to="/home" style={logoLinkStyle}>
                     MAS
                 </Link>
             </div>
 
-            <div style={navLinksStyle}>
-                <Link to="/home" style={linkStyle}>
-                    Home
+            <div style={rightSectionStyle}>
+                <Link to="/home" style={navItemStyle}>
+                    🏠 Home
                 </Link>
 
                 {token && (
-                    <Link to="/cart" style={linkStyle}>
-                        Cart
+                    <Link to="/cart" style={navItemStyle}>
+                        🛒 Cart
                     </Link>
                 )}
 
                 {role === "ADMIN" && (
-                    <Link to="/admin" style={linkStyle}>
-                        Admin
+                    <Link to="/admin" style={navItemStyle}>
+                        ⚙️ Admin
                     </Link>
                 )}
 
-                {token && (
-                    <Link
-                        to="/profile"
-                        style={profileAvatarStyle}
-                    >
+                {token ? (
+                    <Link to="/profile" style={profileAvatarStyle}>
                         {getInitial(profileName)}
                     </Link>
-                )}
-
-                {!token && (
+                ) : (
                     <Link to="/login" style={loginButtonStyle}>
                         Login
                     </Link>
@@ -69,35 +87,32 @@ const navbarStyle = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: "0 30px",
+    padding: "0 35px",
     zIndex: 1000,
     boxShadow: "0 2px 10px rgba(0,0,0,0.12)"
-};
-
-const logoStyle = {
-    display: "flex",
-    alignItems: "center"
 };
 
 const logoLinkStyle = {
     color: "white",
     textDecoration: "none",
-    fontSize: "28px",
+    fontSize: "30px",
     fontWeight: "bold",
     letterSpacing: "1px"
 };
 
-const navLinksStyle = {
+const rightSectionStyle = {
     display: "flex",
     alignItems: "center",
-    gap: "18px"
+    gap: "24px"
 };
 
-const linkStyle = {
+const navItemStyle = {
     color: "#e5e7eb",
     textDecoration: "none",
-    fontWeight: "500",
-    fontSize: "15px"
+    fontWeight: "600",
+    fontSize: "15px",
+    paddingBottom: "4px",
+    borderBottom: "2px solid transparent"
 };
 
 const profileAvatarStyle = {
@@ -111,16 +126,18 @@ const profileAvatarStyle = {
     alignItems: "center",
     justifyContent: "center",
     fontWeight: "bold",
-    fontSize: "18px"
+    fontSize: "18px",
+    boxShadow: "0 2px 8px rgba(37,99,235,0.35)"
 };
 
 const loginButtonStyle = {
-    padding: "10px 16px",
+    padding: "10px 18px",
     borderRadius: "8px",
     backgroundColor: "#2563eb",
     color: "white",
     textDecoration: "none",
-    fontWeight: "bold"
+    fontWeight: "bold",
+    boxShadow: "0 2px 8px rgba(37,99,235,0.35)"
 };
 
 export default Navbar;
