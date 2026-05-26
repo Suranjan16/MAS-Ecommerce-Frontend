@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-import {
-    getProfile,
-    updateProfile
-} from "../services/profileService";
+import { getProfile } from "../services/profileService";
 
 import { toast } from "react-toastify";
 
@@ -14,7 +12,7 @@ function Profile() {
         gender: ""
     });
 
-    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchProfile();
@@ -32,39 +30,20 @@ function Profile() {
             );
         } catch (error) {
             console.log(error);
-
             toast.error("Failed to load profile");
         }
     };
 
-    const handleChange = (e) => {
-        setProfile({
-            ...profile,
-            [e.target.name]: e.target.value
-        });
-    };
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        localStorage.removeItem("profileName");
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+        toast.success("Logout successful");
 
-        setLoading(true);
+        navigate("/login");
 
-        try {
-            const response = await updateProfile(profile);
-
-            localStorage.setItem(
-                "profileName",
-                profile.name || "U"
-            );
-
-            toast.success(response);
-        } catch (error) {
-            console.log(error);
-
-            toast.error("Failed to update profile");
-        } finally {
-            setLoading(false);
-        }
+        window.location.reload();
     };
 
     const getInitial = (name) => {
@@ -77,90 +56,45 @@ function Profile() {
 
     return (
         <div style={pageStyle}>
-            <div style={cardStyle}>
+            <div style={profileCardStyle}>
                 <div style={avatarStyle}>
                     {getInitial(profile.name)}
                 </div>
 
-                <h1 style={titleStyle}>My Profile</h1>
+                <h2 style={profileNameStyle}>
+                    {profile.name || "User"}
+                </h2>
 
-                <p style={subtitleStyle}>
-                    Manage your personal details
+                <p style={profileInfoStyle}>
+                    DOB: {profile.dob || "Not added"}
                 </p>
 
-                <form onSubmit={handleSubmit}>
-                    <div style={fieldStyle}>
-                        <label style={labelStyle}>
-                            Name
-                        </label>
+                <p style={profileInfoStyle}>
+                    Gender: {profile.gender || "Not added"}
+                </p>
 
-                        <input
-                            type="text"
-                            name="name"
-                            value={profile.name || ""}
-                            onChange={handleChange}
-                            placeholder="Enter your name"
-                            style={inputStyle}
-                        />
-                    </div>
-
-                    <div style={fieldStyle}>
-                        <label style={labelStyle}>
-                            Date of Birth
-                        </label>
-
-                        <input
-                            type="date"
-                            name="dob"
-                            value={profile.dob || ""}
-                            onChange={handleChange}
-                            style={inputStyle}
-                        />
-                    </div>
-
-                    <div style={fieldStyle}>
-                        <label style={labelStyle}>
-                            Gender
-                        </label>
-
-                        <select
-                            name="gender"
-                            value={profile.gender || ""}
-                            onChange={handleChange}
-                            style={inputStyle}
-                        >
-                            <option value="">
-                                Select Gender
-                            </option>
-
-                            <option value="Male">
-                                Male
-                            </option>
-
-                            <option value="Female">
-                                Female
-                            </option>
-
-                            <option value="Other">
-                                Other
-                            </option>
-                        </select>
-                    </div>
+                <div style={menuStyle}>
+                    <button
+                        style={menuButtonStyle}
+                        onClick={() => navigate("/profile/update")}
+                    >
+                        Update Profile
+                    </button>
 
                     <button
-                        type="submit"
-                        disabled={loading}
-                        style={{
-                            ...buttonStyle,
-                            opacity: loading ? 0.7 : 1,
-                            cursor: loading
-                                ? "not-allowed"
-                                : "pointer"
-                        }}
+                        style={menuButtonStyle}
+                        onClick={() => navigate("/orders")}
                     >
-                        {loading ? "Saving..." : "Save Profile"}
+                        My Orders
                     </button>
-                </form>
+
+                    <button
+                        style={logoutButtonStyle}
+                        onClick={handleLogout}
+                    >
+                        Logout
+                    </button>
+                </div>
             </div>
         </div>
     );
@@ -175,69 +109,66 @@ const pageStyle = {
     alignItems: "center"
 };
 
-const cardStyle = {
+const profileCardStyle = {
     width: "420px",
-    padding: "30px",
+    padding: "35px",
     backgroundColor: "white",
-    borderRadius: "14px",
-    boxShadow: "0 2px 14px rgba(0,0,0,0.12)"
+    borderRadius: "16px",
+    boxShadow: "0 2px 14px rgba(0,0,0,0.12)",
+    textAlign: "center"
 };
 
 const avatarStyle = {
-    width: "90px",
-    height: "90px",
+    width: "100px",
+    height: "100px",
     borderRadius: "50%",
     backgroundColor: "#2563eb",
     color: "white",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "36px",
+    fontSize: "42px",
     fontWeight: "bold",
-    margin: "0 auto 20px"
+    margin: "0 auto 18px"
 };
 
-const titleStyle = {
-    textAlign: "center",
-    marginBottom: "8px",
+const profileNameStyle = {
+    marginBottom: "10px",
     color: "#111827"
 };
 
-const subtitleStyle = {
-    textAlign: "center",
+const profileInfoStyle = {
     color: "#6b7280",
-    marginBottom: "25px"
+    margin: "8px 0"
 };
 
-const fieldStyle = {
-    marginBottom: "18px"
+const menuStyle = {
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+    marginTop: "25px"
 };
 
-const labelStyle = {
-    display: "block",
-    marginBottom: "6px",
-    fontWeight: "600",
-    color: "#374151"
-};
-
-const inputStyle = {
+const menuButtonStyle = {
     width: "100%",
-    padding: "11px",
+    padding: "12px",
     border: "1px solid #d1d5db",
     borderRadius: "8px",
-    fontSize: "15px",
-    boxSizing: "border-box"
+    backgroundColor: "white",
+    color: "#111827",
+    fontWeight: "bold",
+    cursor: "pointer"
 };
 
-const buttonStyle = {
+const logoutButtonStyle = {
     width: "100%",
     padding: "12px",
     border: "none",
     borderRadius: "8px",
-    backgroundColor: "#2563eb",
+    backgroundColor: "#ef4444",
     color: "white",
-    fontSize: "16px",
-    fontWeight: "bold"
+    fontWeight: "bold",
+    cursor: "pointer"
 };
 
 export default Profile;

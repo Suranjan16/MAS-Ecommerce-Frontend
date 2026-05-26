@@ -15,6 +15,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AddProduct from "./pages/AddProduct";
 import UpdateProduct from "./pages/UpdateProduct";
 import Profile from "./pages/Profile";
+import UpdateProfile from "./pages/UpdateProfile";
 
 function App() {
     return (
@@ -30,6 +31,7 @@ function App() {
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/orders" element={<Orders />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/profile/update" element={<UpdateProfile />} />
 
                 <Route
                     path="/admin"

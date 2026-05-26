@@ -1,150 +1,60 @@
-import { Link, useNavigate } from "react-router-dom";
-
-import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 function Navbar() {
+    const token = localStorage.getItem("token");
 
-    const navigate = useNavigate();
+    const role = localStorage.getItem("role");
 
-    const token =
-        localStorage.getItem("token");
-
-    const role =
-        localStorage.getItem("role");
-
-    const profileName =
-        localStorage.getItem("profileName");
+    const profileName = localStorage.getItem("profileName");
 
     const getInitial = (name) => {
-
-        if (
-            !name ||
-            name.trim() === ""
-        ) {
+        if (!name || name.trim() === "") {
             return "U";
         }
 
-        return name
-            .trim()
-            .charAt(0)
-            .toUpperCase();
-    };
-
-    const handleLogout = () => {
-
-        localStorage.removeItem("token");
-
-        localStorage.removeItem("role");
-
-        localStorage.removeItem("profileName");
-
-        toast.success(
-            "Logout successful"
-        );
-
-        navigate("/login");
-
-        window.location.reload();
+        return name.trim().charAt(0).toUpperCase();
     };
 
     return (
         <nav style={navbarStyle}>
-
             <div style={logoStyle}>
-
-                <Link
-                    to="/home"
-                    style={logoLinkStyle}
-                >
+                <Link to="/home" style={logoLinkStyle}>
                     MAS
                 </Link>
-
             </div>
 
             <div style={navLinksStyle}>
-
-                <Link
-                    to="/home"
-                    style={linkStyle}
-                >
+                <Link to="/home" style={linkStyle}>
                     Home
                 </Link>
 
-                {
-                    token && (
+                {token && (
+                    <Link to="/cart" style={linkStyle}>
+                        Cart
+                    </Link>
+                )}
 
-                        <Link
-                            to="/cart"
-                            style={linkStyle}
-                        >
-                            Cart
-                        </Link>
-                    )
-                }
+                {role === "ADMIN" && (
+                    <Link to="/admin" style={linkStyle}>
+                        Admin
+                    </Link>
+                )}
 
-                {
-                    token && (
+                {token && (
+                    <Link
+                        to="/profile"
+                        style={profileAvatarStyle}
+                    >
+                        {getInitial(profileName)}
+                    </Link>
+                )}
 
-                        <Link
-                            to="/orders"
-                            style={linkStyle}
-                        >
-                            Orders
-                        </Link>
-                    )
-                }
-
-                {
-                    role === "ADMIN" && (
-
-                        <Link
-                            to="/admin"
-                            style={linkStyle}
-                        >
-                            Admin
-                        </Link>
-                    )
-                }
-
-                {
-                    token && (
-
-                        <Link
-                            to="/profile"
-                            style={profileAvatarStyle}
-                        >
-                            {
-                                getInitial(
-                                    profileName
-                                )
-                            }
-                        </Link>
-                    )
-                }
-
-                {
-                    !token ? (
-
-                        <Link
-                            to="/login"
-                            style={loginButtonStyle}
-                        >
-                            Login
-                        </Link>
-
-                    ) : (
-
-                        <button
-                            onClick={handleLogout}
-                            style={logoutButtonStyle}
-                        >
-                            Logout
-                        </button>
-                    )
-                }
-
+                {!token && (
+                    <Link to="/login" style={loginButtonStyle}>
+                        Login
+                    </Link>
+                )}
             </div>
-
         </nav>
     );
 }
@@ -161,8 +71,7 @@ const navbarStyle = {
     alignItems: "center",
     padding: "0 30px",
     zIndex: 1000,
-    boxShadow:
-        "0 2px 10px rgba(0,0,0,0.12)"
+    boxShadow: "0 2px 10px rgba(0,0,0,0.12)"
 };
 
 const logoStyle = {
@@ -212,16 +121,6 @@ const loginButtonStyle = {
     color: "white",
     textDecoration: "none",
     fontWeight: "bold"
-};
-
-const logoutButtonStyle = {
-    padding: "10px 16px",
-    border: "none",
-    borderRadius: "8px",
-    backgroundColor: "#ef4444",
-    color: "white",
-    fontWeight: "bold",
-    cursor: "pointer"
 };
 
 export default Navbar;
