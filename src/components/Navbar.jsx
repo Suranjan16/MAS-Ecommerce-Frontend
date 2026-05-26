@@ -3,28 +3,44 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 function Navbar() {
+
     const navigate = useNavigate();
 
-    const token = localStorage.getItem("token");
+    const token =
+        localStorage.getItem("token");
 
-    const role = localStorage.getItem("role");
+    const role =
+        localStorage.getItem("role");
 
-    const profileName = localStorage.getItem("profileName");
+    const profileName =
+        localStorage.getItem("profileName");
 
     const getInitial = (name) => {
-        if (!name || name.trim() === "") {
+
+        if (
+            !name ||
+            name.trim() === ""
+        ) {
             return "U";
         }
 
-        return name.trim().charAt(0).toUpperCase();
+        return name
+            .trim()
+            .charAt(0)
+            .toUpperCase();
     };
 
     const handleLogout = () => {
+
         localStorage.removeItem("token");
+
         localStorage.removeItem("role");
+
         localStorage.removeItem("profileName");
 
-        toast.success("Logout successful");
+        toast.success(
+            "Logout successful"
+        );
 
         navigate("/login");
 
@@ -33,63 +49,111 @@ function Navbar() {
 
     return (
         <nav style={navbarStyle}>
+
             <div style={logoStyle}>
-                <Link to="/home" style={logoLinkStyle}>
+
+                <Link
+                    to="/home"
+                    style={logoLinkStyle}
+                >
                     MAS
                 </Link>
+
             </div>
 
             <div style={navLinksStyle}>
-                <Link to="/home" style={linkStyle}>
+
+                <Link
+                    to="/home"
+                    style={linkStyle}
+                >
                     Home
                 </Link>
 
-                {token && (
-                    <Link to="/cart" style={linkStyle}>
-                        Cart
-                    </Link>
-                )}
+                {
+                    token && (
 
-                {token && (
-                    <Link to="/orders" style={linkStyle}>
-                        Orders
-                    </Link>
-                )}
-
-                {role === "ADMIN" && (
-                    <Link to="/admin" style={linkStyle}>
-                        Admin
-                    </Link>
-                )}
-
-                {token && (
-                    <Link
-                        to="/profile"
-                        style={profileAvatarStyle}
-                    >
-                        {getInitial(profileName)}
-                    </Link>
-                )}
-
-                {!token ? (
-                    <>
-                        <Link to="/login" style={linkStyle}>
-                            Login
+                        <Link
+                            to="/cart"
+                            style={linkStyle}
+                        >
+                            Cart
                         </Link>
+                    )
+                }
 
-                        <Link to="/signup" style={signupButtonStyle}>
-                            Signup
+                {
+                    token && (
+
+                        <Link
+                            to="/orders"
+                            style={linkStyle}
+                        >
+                            Orders
                         </Link>
-                    </>
-                ) : (
-                    <button
-                        onClick={handleLogout}
-                        style={logoutButtonStyle}
-                    >
-                        Logout
-                    </button>
-                )}
+                    )
+                }
+
+                {
+                    role === "ADMIN" && (
+
+                        <Link
+                            to="/admin"
+                            style={linkStyle}
+                        >
+                            Admin
+                        </Link>
+                    )
+                }
+
+                {
+                    token && (
+
+                        <Link
+                            to="/profile"
+                            style={profileAvatarStyle}
+                        >
+                            {
+                                getInitial(
+                                    profileName
+                                )
+                            }
+                        </Link>
+                    )
+                }
+
+                {
+                    !token ? (
+
+                        <>
+                            <Link
+                                to="/login"
+                                style={loginButtonStyle}
+                            >
+                                Login
+                            </Link>
+
+                            <Link
+                                to="/signup"
+                                style={signupButtonStyle}
+                            >
+                                Signup
+                            </Link>
+                        </>
+
+                    ) : (
+
+                        <button
+                            onClick={handleLogout}
+                            style={logoutButtonStyle}
+                        >
+                            Logout
+                        </button>
+                    )
+                }
+
             </div>
+
         </nav>
     );
 }
@@ -106,7 +170,8 @@ const navbarStyle = {
     alignItems: "center",
     padding: "0 30px",
     zIndex: 1000,
-    boxShadow: "0 2px 10px rgba(0,0,0,0.12)"
+    boxShadow:
+        "0 2px 10px rgba(0,0,0,0.12)"
 };
 
 const logoStyle = {
@@ -147,6 +212,15 @@ const profileAvatarStyle = {
     justifyContent: "center",
     fontWeight: "bold",
     fontSize: "18px"
+};
+
+const loginButtonStyle = {
+    padding: "10px 16px",
+    borderRadius: "8px",
+    backgroundColor: "#2563eb",
+    color: "white",
+    textDecoration: "none",
+    fontWeight: "bold"
 };
 
 const signupButtonStyle = {
