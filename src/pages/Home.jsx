@@ -46,6 +46,7 @@ function Home() {
 
             const data = await getAdvancedProducts({
                 category,
+                section,
                 subCategory,
                 name: searchFromNavbar,
                 minPrice,

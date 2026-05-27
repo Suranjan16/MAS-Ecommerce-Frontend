@@ -101,7 +101,10 @@ function UpdateProduct() {
         setLoading(true);
 
         try {
-            await updateProduct(id, product);
+            await updateProduct(id, {
+                ...product,
+                section
+            });
 
             toast.success("Product updated successfully");
 

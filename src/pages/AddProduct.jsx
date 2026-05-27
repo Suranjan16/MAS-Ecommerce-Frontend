@@ -38,12 +38,12 @@ function AddProduct() {
             const product = {
                 name,
                 category,
+                section,
                 subCategory,
                 price,
                 quantity,
                 imageUrl
             };
-
             await addProduct(product);
 
             toast.success("Product added successfully");

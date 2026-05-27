@@ -86,9 +86,13 @@ function ProductDetails() {
                         {product.name}
                     </h1>
 
-                    <p style={categoryStyle}>
-                        Category: {product.category}
-                    </p>
+                    <div style={categoryBoxStyle}>
+                        <span>{product.category}</span>
+                        <span>/</span>
+                        <span>{product.section}</span>
+                        <span>/</span>
+                        <span>{product.subCategory}</span>
+                    </div>
 
                     <h2 style={priceStyle}>
                         ₹{product.price}
@@ -190,8 +194,12 @@ const productNameStyle = {
     color: "#111827"
 };
 
-const categoryStyle = {
+const categoryBoxStyle = {
+    display: "flex",
+    gap: "8px",
+    alignItems: "center",
     color: "#6b7280",
+    fontWeight: "600",
     marginBottom: "15px"
 };
 

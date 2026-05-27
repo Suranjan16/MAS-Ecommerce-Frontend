@@ -63,6 +63,7 @@ export const deleteProduct = async (id) => {
 
 export const getAdvancedProducts = async ({
     category = "",
+    section = "",
     subCategory = "",
     name = "",
     minPrice = "",
@@ -77,6 +78,7 @@ export const getAdvancedProducts = async ({
         {
             params: {
                 category: category || null,
+                section: section || null,
                 subCategory: subCategory || null,
                 name: name || null,
                 minPrice: minPrice || null,
