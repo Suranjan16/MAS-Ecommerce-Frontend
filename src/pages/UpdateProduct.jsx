@@ -6,6 +6,8 @@ import {
     updateProduct
 } from "../services/productService";
 
+import { categoryData } from "../constants/categoryData";
+
 import { toast } from "react-toastify";
 
 function UpdateProduct() {
@@ -21,18 +23,26 @@ function UpdateProduct() {
         imageUrl: ""
     });
 
+    const [section, setSection] = useState("");
     const [loading, setLoading] = useState(false);
-
-    const subCategoryOptions = {
-        Fashion: ["Shirts", "Watches", "Shoes"],
-        Mobile: ["Android", "iPhone", "Accessories"],
-        Laptop: ["Gaming", "Business", "Student"],
-        Electronics: ["Headphones", "Speakers", "Cameras"]
-    };
 
     useEffect(() => {
         fetchProduct();
     }, []);
+
+    const findSectionBySubCategory = (category, subCategory) => {
+        if (!category || !subCategory || !categoryData[category]) {
+            return "";
+        }
+
+        for (const sectionName of Object.keys(categoryData[category])) {
+            if (categoryData[category][sectionName].includes(subCategory)) {
+                return sectionName;
+            }
+        }
+
+        return "";
+    };
 
     const fetchProduct = async () => {
         try {
@@ -46,6 +56,13 @@ function UpdateProduct() {
                 quantity: data.quantity || "",
                 imageUrl: data.imageUrl || ""
             });
+
+            setSection(
+                findSectionBySubCategory(
+                    data.category,
+                    data.subCategory
+                )
+            );
         } catch (error) {
             console.log(error);
             toast.error("Failed to load product");
@@ -65,6 +82,17 @@ function UpdateProduct() {
             category: value,
             subCategory: ""
         });
+
+        setSection("");
+    };
+
+    const handleSectionChange = (value) => {
+        setSection(value);
+
+        setProduct({
+            ...product,
+            subCategory: ""
+        });
     };
 
     const handleSubmit = async (e) => {
@@ -80,7 +108,6 @@ function UpdateProduct() {
             navigate("/admin");
         } catch (error) {
             console.log(error);
-
             toast.error("Failed to update product");
         } finally {
             setLoading(false);
@@ -122,10 +149,36 @@ function UpdateProduct() {
                             required
                         >
                             <option value="">Select Category</option>
-                            <option value="Fashion">Fashion</option>
-                            <option value="Mobile">Mobile</option>
-                            <option value="Laptop">Laptop</option>
-                            <option value="Electronics">Electronics</option>
+
+                            {Object.keys(categoryData).map((item) => (
+                                <option key={item} value={item}>
+                                    {item}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div style={fieldStyle}>
+                        <label style={labelStyle}>Section</label>
+                        <select
+                            value={section}
+                            onChange={(e) =>
+                                handleSectionChange(e.target.value)
+                            }
+                            style={inputStyle}
+                            required
+                            disabled={!product.category}
+                        >
+                            <option value="">Select Section</option>
+
+                            {product.category &&
+                                Object.keys(
+                                    categoryData[product.category]
+                                ).map((item) => (
+                                    <option key={item} value={item}>
+                                        {item}
+                                    </option>
+                                ))}
                         </select>
                     </div>
 
@@ -137,21 +190,19 @@ function UpdateProduct() {
                             onChange={handleChange}
                             style={inputStyle}
                             required
-                            disabled={!product.category}
+                            disabled={!section}
                         >
                             <option value="">Select Sub Category</option>
 
                             {product.category &&
-                                subCategoryOptions[
-                                    product.category
-                                ]?.map((item) => (
-                                    <option
-                                        key={item}
-                                        value={item}
-                                    >
-                                        {item}
-                                    </option>
-                                ))}
+                                section &&
+                                categoryData[product.category][section].map(
+                                    (item) => (
+                                        <option key={item} value={item}>
+                                            {item}
+                                        </option>
+                                    )
+                                )}
                         </select>
                     </div>
 

@@ -6,6 +6,7 @@ import {
 
 import { getAdvancedProducts } from "../services/productService";
 import { addProductToCart } from "../services/cartService";
+import { categoryData } from "../constants/categoryData";
 
 import { toast } from "react-toastify";
 
@@ -18,6 +19,7 @@ function Home() {
     const [showFilters, setShowFilters] = useState(false);
 
     const [category, setCategory] = useState("");
+    const [section, setSection] = useState("");
     const [subCategory, setSubCategory] = useState("");
     const [minPrice, setMinPrice] = useState("");
     const [maxPrice, setMaxPrice] = useState("");
@@ -28,13 +30,6 @@ function Home() {
 
     const size = 25;
     const navigate = useNavigate();
-
-    const subCategoryOptions = {
-        Fashion: ["Shirts", "Watches", "Shoes"],
-        Mobile: ["Android", "iPhone", "Accessories"],
-        Laptop: ["Gaming", "Business", "Student"],
-        Electronics: ["Headphones", "Speakers", "Cameras"]
-    };
 
     useEffect(() => {
         fetchProducts();
@@ -71,6 +66,12 @@ function Home() {
 
     const handleCategoryChange = (value) => {
         setCategory(value);
+        setSection("");
+        setSubCategory("");
+    };
+
+    const handleSectionChange = (value) => {
+        setSection(value);
         setSubCategory("");
     };
 
@@ -81,6 +82,7 @@ function Home() {
 
     const handleClearFilters = async () => {
         setCategory("");
+        setSection("");
         setSubCategory("");
         setMinPrice("");
         setMaxPrice("");
@@ -142,10 +144,32 @@ function Home() {
                         style={inputStyle}
                     >
                         <option value="">All Categories</option>
-                        <option value="Fashion">Fashion</option>
-                        <option value="Mobile">Mobile</option>
-                        <option value="Laptop">Laptop</option>
-                        <option value="Electronics">Electronics</option>
+
+                        {Object.keys(categoryData).map((item) => (
+                            <option key={item} value={item}>
+                                {item}
+                            </option>
+                        ))}
+                    </select>
+
+                    <select
+                        value={section}
+                        onChange={(e) =>
+                            handleSectionChange(e.target.value)
+                        }
+                        style={inputStyle}
+                        disabled={!category}
+                    >
+                        <option value="">All Sections</option>
+
+                        {category &&
+                            Object.keys(categoryData[category]).map(
+                                (item) => (
+                                    <option key={item} value={item}>
+                                        {item}
+                                    </option>
+                                )
+                            )}
                     </select>
 
                     <select
@@ -154,23 +178,28 @@ function Home() {
                             setSubCategory(e.target.value)
                         }
                         style={inputStyle}
-                        disabled={!category}
+                        disabled={!section}
                     >
                         <option value="">All Sub Categories</option>
 
                         {category &&
-                            subCategoryOptions[category]?.map((item) => (
-                                <option key={item} value={item}>
-                                    {item}
-                                </option>
-                            ))}
+                            section &&
+                            categoryData[category][section].map(
+                                (item) => (
+                                    <option key={item} value={item}>
+                                        {item}
+                                    </option>
+                                )
+                            )}
                     </select>
 
                     <input
                         type="number"
                         placeholder="Min Price"
                         value={minPrice}
-                        onChange={(e) => setMinPrice(e.target.value)}
+                        onChange={(e) =>
+                            setMinPrice(e.target.value)
+                        }
                         style={inputStyle}
                     />
 
@@ -178,13 +207,17 @@ function Home() {
                         type="number"
                         placeholder="Max Price"
                         value={maxPrice}
-                        onChange={(e) => setMaxPrice(e.target.value)}
+                        onChange={(e) =>
+                            setMaxPrice(e.target.value)
+                        }
                         style={inputStyle}
                     />
 
                     <select
                         value={sortOption}
-                        onChange={(e) => setSortOption(e.target.value)}
+                        onChange={(e) =>
+                            setSortOption(e.target.value)
+                        }
                         style={inputStyle}
                     >
                         <option value="">Default Sorting</option>
@@ -242,7 +275,9 @@ function Home() {
                                 {product.name}
                             </h3>
 
-                            <p style={priceStyle}>₹{product.price}</p>
+                            <p style={priceStyle}>
+                                ₹{product.price}
+                            </p>
 
                             <button
                                 style={buttonStyle}
@@ -264,7 +299,10 @@ function Home() {
                     style={{
                         ...buttonStyle,
                         opacity: page === 0 ? 0.6 : 1,
-                        cursor: page === 0 ? "not-allowed" : "pointer"
+                        cursor:
+                            page === 0
+                                ? "not-allowed"
+                                : "pointer"
                     }}
                 >
                     Previous
@@ -279,7 +317,10 @@ function Home() {
                     onClick={() => setPage(page + 1)}
                     style={{
                         ...buttonStyle,
-                        opacity: page >= totalPages - 1 ? 0.6 : 1,
+                        opacity:
+                            page >= totalPages - 1
+                                ? 0.6
+                                : 1,
                         cursor:
                             page >= totalPages - 1
                                 ? "not-allowed"

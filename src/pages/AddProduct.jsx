@@ -2,12 +2,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { addProduct } from "../services/productService";
+import { categoryData } from "../constants/categoryData";
 
 import { toast } from "react-toastify";
 
 function AddProduct() {
     const [name, setName] = useState("");
     const [category, setCategory] = useState("");
+    const [section, setSection] = useState("");
     const [subCategory, setSubCategory] = useState("");
     const [price, setPrice] = useState("");
     const [quantity, setQuantity] = useState("");
@@ -16,15 +18,14 @@ function AddProduct() {
 
     const navigate = useNavigate();
 
-    const subCategoryOptions = {
-        Fashion: ["Shirts", "Watches", "Shoes"],
-        Mobile: ["Android", "iPhone", "Accessories"],
-        Laptop: ["Gaming", "Business", "Student"],
-        Electronics: ["Headphones", "Speakers", "Cameras"]
-    };
-
     const handleCategoryChange = (value) => {
         setCategory(value);
+        setSection("");
+        setSubCategory("");
+    };
+
+    const handleSectionChange = (value) => {
+        setSection(value);
         setSubCategory("");
     };
 
@@ -50,7 +51,6 @@ function AddProduct() {
             navigate("/admin");
         } catch (error) {
             console.log(error);
-
             toast.error("Failed to add product");
         } finally {
             setLoading(false);
@@ -90,10 +90,36 @@ function AddProduct() {
                             required
                         >
                             <option value="">Select Category</option>
-                            <option value="Fashion">Fashion</option>
-                            <option value="Mobile">Mobile</option>
-                            <option value="Laptop">Laptop</option>
-                            <option value="Electronics">Electronics</option>
+
+                            {Object.keys(categoryData).map((item) => (
+                                <option key={item} value={item}>
+                                    {item}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div style={fieldStyle}>
+                        <label style={labelStyle}>Section</label>
+                        <select
+                            value={section}
+                            onChange={(e) =>
+                                handleSectionChange(e.target.value)
+                            }
+                            style={inputStyle}
+                            required
+                            disabled={!category}
+                        >
+                            <option value="">Select Section</option>
+
+                            {category &&
+                                Object.keys(categoryData[category]).map(
+                                    (item) => (
+                                        <option key={item} value={item}>
+                                            {item}
+                                        </option>
+                                    )
+                                )}
                         </select>
                     </div>
 
@@ -106,17 +132,15 @@ function AddProduct() {
                             }
                             style={inputStyle}
                             required
-                            disabled={!category}
+                            disabled={!section}
                         >
                             <option value="">Select Sub Category</option>
 
                             {category &&
-                                subCategoryOptions[category]?.map(
+                                section &&
+                                categoryData[category][section].map(
                                     (item) => (
-                                        <option
-                                            key={item}
-                                            value={item}
-                                        >
+                                        <option key={item} value={item}>
                                             {item}
                                         </option>
                                     )
