@@ -18,6 +18,7 @@ function Home() {
     const [showFilters, setShowFilters] = useState(false);
 
     const [category, setCategory] = useState("");
+    const [subCategory, setSubCategory] = useState("");
     const [minPrice, setMinPrice] = useState("");
     const [maxPrice, setMaxPrice] = useState("");
     const [sortOption, setSortOption] = useState("");
@@ -27,6 +28,13 @@ function Home() {
 
     const size = 25;
     const navigate = useNavigate();
+
+    const subCategoryOptions = {
+        Fashion: ["Shirts", "Watches", "Shoes"],
+        Mobile: ["Android", "iPhone", "Accessories"],
+        Laptop: ["Gaming", "Business", "Student"],
+        Electronics: ["Headphones", "Speakers", "Cameras"]
+    };
 
     useEffect(() => {
         fetchProducts();
@@ -43,6 +51,7 @@ function Home() {
 
             const data = await getAdvancedProducts({
                 category,
+                subCategory,
                 name: searchFromNavbar,
                 minPrice,
                 maxPrice,
@@ -60,6 +69,11 @@ function Home() {
         }
     };
 
+    const handleCategoryChange = (value) => {
+        setCategory(value);
+        setSubCategory("");
+    };
+
     const handleApplyFilters = async () => {
         setPage(0);
         await fetchProducts();
@@ -67,6 +81,7 @@ function Home() {
 
     const handleClearFilters = async () => {
         setCategory("");
+        setSubCategory("");
         setMinPrice("");
         setMaxPrice("");
         setSortOption("");
@@ -121,14 +136,34 @@ function Home() {
                 <div style={filterPanelStyle}>
                     <select
                         value={category}
-                        onChange={(e) => setCategory(e.target.value)}
+                        onChange={(e) =>
+                            handleCategoryChange(e.target.value)
+                        }
                         style={inputStyle}
                     >
                         <option value="">All Categories</option>
+                        <option value="Fashion">Fashion</option>
                         <option value="Mobile">Mobile</option>
                         <option value="Laptop">Laptop</option>
                         <option value="Electronics">Electronics</option>
-                        <option value="Fashion">Fashion</option>
+                    </select>
+
+                    <select
+                        value={subCategory}
+                        onChange={(e) =>
+                            setSubCategory(e.target.value)
+                        }
+                        style={inputStyle}
+                        disabled={!category}
+                    >
+                        <option value="">All Sub Categories</option>
+
+                        {category &&
+                            subCategoryOptions[category]?.map((item) => (
+                                <option key={item} value={item}>
+                                    {item}
+                                </option>
+                            ))}
                     </select>
 
                     <input

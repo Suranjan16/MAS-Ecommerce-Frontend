@@ -15,12 +15,20 @@ function UpdateProduct() {
     const [product, setProduct] = useState({
         name: "",
         category: "",
+        subCategory: "",
         price: "",
         quantity: "",
         imageUrl: ""
     });
 
     const [loading, setLoading] = useState(false);
+
+    const subCategoryOptions = {
+        Fashion: ["Shirts", "Watches", "Shoes"],
+        Mobile: ["Android", "iPhone", "Accessories"],
+        Laptop: ["Gaming", "Business", "Student"],
+        Electronics: ["Headphones", "Speakers", "Cameras"]
+    };
 
     useEffect(() => {
         fetchProduct();
@@ -29,7 +37,15 @@ function UpdateProduct() {
     const fetchProduct = async () => {
         try {
             const data = await getProductById(id);
-            setProduct(data);
+
+            setProduct({
+                name: data.name || "",
+                category: data.category || "",
+                subCategory: data.subCategory || "",
+                price: data.price || "",
+                quantity: data.quantity || "",
+                imageUrl: data.imageUrl || ""
+            });
         } catch (error) {
             console.log(error);
             toast.error("Failed to load product");
@@ -40,6 +56,14 @@ function UpdateProduct() {
         setProduct({
             ...product,
             [e.target.name]: e.target.value
+        });
+    };
+
+    const handleCategoryChange = (value) => {
+        setProduct({
+            ...product,
+            category: value,
+            subCategory: ""
         });
     };
 
@@ -88,15 +112,47 @@ function UpdateProduct() {
 
                     <div style={fieldStyle}>
                         <label style={labelStyle}>Category</label>
-                        <input
-                            type="text"
+                        <select
                             name="category"
-                            placeholder="Enter category"
                             value={product.category}
+                            onChange={(e) =>
+                                handleCategoryChange(e.target.value)
+                            }
+                            style={inputStyle}
+                            required
+                        >
+                            <option value="">Select Category</option>
+                            <option value="Fashion">Fashion</option>
+                            <option value="Mobile">Mobile</option>
+                            <option value="Laptop">Laptop</option>
+                            <option value="Electronics">Electronics</option>
+                        </select>
+                    </div>
+
+                    <div style={fieldStyle}>
+                        <label style={labelStyle}>Sub Category</label>
+                        <select
+                            name="subCategory"
+                            value={product.subCategory}
                             onChange={handleChange}
                             style={inputStyle}
                             required
-                        />
+                            disabled={!product.category}
+                        >
+                            <option value="">Select Sub Category</option>
+
+                            {product.category &&
+                                subCategoryOptions[
+                                    product.category
+                                ]?.map((item) => (
+                                    <option
+                                        key={item}
+                                        value={item}
+                                    >
+                                        {item}
+                                    </option>
+                                ))}
+                        </select>
                     </div>
 
                     <div style={rowStyle}>
@@ -133,7 +189,7 @@ function UpdateProduct() {
                             type="text"
                             name="imageUrl"
                             placeholder="Paste product image URL"
-                            value={product.imageUrl || ""}
+                            value={product.imageUrl}
                             onChange={handleChange}
                             style={inputStyle}
                         />

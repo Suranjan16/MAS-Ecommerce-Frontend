@@ -8,12 +8,25 @@ import { toast } from "react-toastify";
 function AddProduct() {
     const [name, setName] = useState("");
     const [category, setCategory] = useState("");
+    const [subCategory, setSubCategory] = useState("");
     const [price, setPrice] = useState("");
     const [quantity, setQuantity] = useState("");
     const [imageUrl, setImageUrl] = useState("");
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
+
+    const subCategoryOptions = {
+        Fashion: ["Shirts", "Watches", "Shoes"],
+        Mobile: ["Android", "iPhone", "Accessories"],
+        Laptop: ["Gaming", "Business", "Student"],
+        Electronics: ["Headphones", "Speakers", "Cameras"]
+    };
+
+    const handleCategoryChange = (value) => {
+        setCategory(value);
+        setSubCategory("");
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -24,6 +37,7 @@ function AddProduct() {
             const product = {
                 name,
                 category,
+                subCategory,
                 price,
                 quantity,
                 imageUrl
@@ -67,14 +81,47 @@ function AddProduct() {
 
                     <div style={fieldStyle}>
                         <label style={labelStyle}>Category</label>
-                        <input
-                            type="text"
-                            placeholder="Enter category"
+                        <select
                             value={category}
-                            onChange={(e) => setCategory(e.target.value)}
+                            onChange={(e) =>
+                                handleCategoryChange(e.target.value)
+                            }
                             style={inputStyle}
                             required
-                        />
+                        >
+                            <option value="">Select Category</option>
+                            <option value="Fashion">Fashion</option>
+                            <option value="Mobile">Mobile</option>
+                            <option value="Laptop">Laptop</option>
+                            <option value="Electronics">Electronics</option>
+                        </select>
+                    </div>
+
+                    <div style={fieldStyle}>
+                        <label style={labelStyle}>Sub Category</label>
+                        <select
+                            value={subCategory}
+                            onChange={(e) =>
+                                setSubCategory(e.target.value)
+                            }
+                            style={inputStyle}
+                            required
+                            disabled={!category}
+                        >
+                            <option value="">Select Sub Category</option>
+
+                            {category &&
+                                subCategoryOptions[category]?.map(
+                                    (item) => (
+                                        <option
+                                            key={item}
+                                            value={item}
+                                        >
+                                            {item}
+                                        </option>
+                                    )
+                                )}
+                        </select>
                     </div>
 
                     <div style={rowStyle}>
@@ -84,7 +131,9 @@ function AddProduct() {
                                 type="number"
                                 placeholder="Price"
                                 value={price}
-                                onChange={(e) => setPrice(e.target.value)}
+                                onChange={(e) =>
+                                    setPrice(e.target.value)
+                                }
                                 style={inputStyle}
                                 required
                             />
@@ -96,7 +145,9 @@ function AddProduct() {
                                 type="number"
                                 placeholder="Quantity"
                                 value={quantity}
-                                onChange={(e) => setQuantity(e.target.value)}
+                                onChange={(e) =>
+                                    setQuantity(e.target.value)
+                                }
                                 style={inputStyle}
                                 required
                             />
@@ -109,14 +160,18 @@ function AddProduct() {
                             type="text"
                             placeholder="Paste product image URL"
                             value={imageUrl}
-                            onChange={(e) => setImageUrl(e.target.value)}
+                            onChange={(e) =>
+                                setImageUrl(e.target.value)
+                            }
                             style={inputStyle}
                         />
                     </div>
 
                     {imageUrl && (
                         <div style={previewBoxStyle}>
-                            <p style={previewTextStyle}>Image Preview</p>
+                            <p style={previewTextStyle}>
+                                Image Preview
+                            </p>
 
                             <img
                                 src={imageUrl}
