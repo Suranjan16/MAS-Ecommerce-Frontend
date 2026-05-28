@@ -212,10 +212,13 @@ function Orders() {
                                             )
                                         }
 
-                                        {order.status !==
-                                            "CANCELLED" &&
-                                            order.status !==
-                                                "DELIVERED" && (
+                                        {
+                                            ![
+                                                "CANCELLED",
+                                                "DELIVERED"
+                                            ].includes(
+                                                order.status
+                                            ) && (
                                                 <button
                                                     style={
                                                         cancelButtonStyle
@@ -228,7 +231,8 @@ function Orders() {
                                                 >
                                                     Cancel Order
                                                 </button>
-                                            )}
+                                            )
+                                        }
                                     </div>
                                 </div>
                             </div>
