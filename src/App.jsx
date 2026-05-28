@@ -18,6 +18,7 @@ import Profile from "./pages/Profile";
 import UpdateProfile from "./pages/UpdateProfile";
 import ProductDetails from "./pages/ProductDetails";
 import TrackOrder from "./pages/TrackOrder";
+import AdminOrders from "./pages/AdminOrders";
 
 function App() {
     return (
@@ -35,6 +36,7 @@ function App() {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/profile/update" element={<UpdateProfile />} />
                 <Route path="/product/:id" element={<ProductDetails />} />
+                <Route path="/admin/orders" element={<AdminOrders />} />
 
                 <Route
                     path="/admin"

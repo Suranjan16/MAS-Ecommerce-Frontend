@@ -156,19 +156,34 @@ function Orders() {
                             </div>
 
                             <div style={footerStyle}>
-                                <div>
-                                    <p style={paymentStyle}>
-                                        Payment:{" "}
-                                        {order.paymentMethod}
-                                    </p>
+                                {
+                                    order.status !==
+                                        "CANCELLED" && (
+                                        <div>
+                                            <p
+                                                style={
+                                                    paymentStyle
+                                                }
+                                            >
+                                                Payment:{" "}
+                                                {
+                                                    order.paymentMethod
+                                                }
+                                            </p>
 
-                                    <p style={paymentStatusStyle}>
-                                        Payment Status:{" "}
-                                        {
-                                            order.paymentStatus
-                                        }
-                                    </p>
-                                </div>
+                                            <p
+                                                style={
+                                                    paymentStatusStyle
+                                                }
+                                            >
+                                                Payment Status:{" "}
+                                                {
+                                                    order.paymentStatus
+                                                }
+                                            </p>
+                                        </div>
+                                    )
+                                }
 
                                 <div style={rightSectionStyle}>
                                     <h2 style={totalStyle}>
@@ -179,18 +194,23 @@ function Orders() {
                                     </h2>
 
                                     <div>
-                                        <button
-                                            style={
-                                                trackButtonStyle
-                                            }
-                                            onClick={() =>
-                                                navigate(
-                                                    `/track-order/${order.orderId}`
-                                                )
-                                            }
-                                        >
-                                            Track Order
-                                        </button>
+                                        {
+                                            order.status !==
+                                                "CANCELLED" && (
+                                                <button
+                                                    style={
+                                                        trackButtonStyle
+                                                    }
+                                                    onClick={() =>
+                                                        navigate(
+                                                            `/track-order/${order.orderId}`
+                                                        )
+                                                    }
+                                                >
+                                                    Track Order
+                                                </button>
+                                            )
+                                        }
 
                                         {order.status !==
                                             "CANCELLED" &&

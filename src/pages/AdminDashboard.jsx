@@ -1,226 +1,158 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import {
-    getAllProducts,
-    deleteProduct
-} from "../services/productService";
+import { getAllProducts, deleteProduct } from "../services/productService";
 
 import { toast } from "react-toastify";
 
 function AdminDashboard() {
 
-    const [products, setProducts] =
-        useState([]);
+    const [products, setProducts] = useState([]);
 
-    const navigate =
-        useNavigate();
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchProducts();
     }, []);
 
-    const fetchProducts =
-        async () => {
-
+    const fetchProducts = async () => {
         try {
-
-            const data =
-                await getAllProducts();
+            const data = await getAllProducts();
 
             setProducts(data);
-
         } catch (error) {
-
             console.log(error);
 
-            toast.error(
-                "Failed to load products"
-            );
+            toast.error("Failed to load products");
         }
     };
 
-    const handleDelete =
-        async (productId) => {
+    const handleDelete = async (id) => {
+        const confirmDelete = window.confirm(
+            "Are you sure you want to delete this product?"
+        );
+
+        if (!confirmDelete) {
+            return;
+        }
 
         try {
+            await deleteProduct(id);
 
-            const response =
-                await deleteProduct(productId);
-
-            toast.success(response);
+            toast.success("Product deleted successfully");
 
             fetchProducts();
-
         } catch (error) {
-
             console.log(error);
 
-            toast.error(
-                "This product cannot be deleted because it is linked to cart or orders"
-            );
+            toast.error("Failed to delete product");
         }
     };
 
     return (
         <div style={pageStyle}>
-
             <div style={headerStyle}>
-
                 <div>
-
                     <h1 style={titleStyle}>
                         Admin Dashboard
                     </h1>
 
                     <p style={subtitleStyle}>
-                        Manage products, stock, pricing and images
+                        Manage products and orders
                     </p>
-
                 </div>
 
-                <button
-                    onClick={() =>
-                        navigate("/admin/add-product")
-                    }
-                    style={addButtonStyle}
-                >
-                    + Add Product
-                </button>
-
-            </div>
-
-            <div style={tableContainerStyle}>
-
-                <table style={tableStyle}>
-
-                    <thead>
-
-                        <tr>
-
-                            <th style={thStyle}>
-                                Image
-                            </th>
-
-                            <th style={thStyle}>
-                                Product
-                            </th>
-
-                            <th style={thStyle}>
-                                Category
-                            </th>
-
-                            <th style={thStyle}>
-                                Price
-                            </th>
-
-                            <th style={thStyle}>
-                                Stock
-                            </th>
-
-                            <th style={thStyle}>
-                                Actions
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {
-                            products.map(
-                                (product) => (
-
-                                <tr key={product.id}>
-
-                                    <td style={tdStyle}>
-
-                                        <img
-                                            src={
-                                                product.imageUrl ||
-                                                "https://placehold.co/80x80"
-                                            }
-                                            alt={product.name}
-                                            style={imageStyle}
-                                            onError={(e) => {
-                                                e.target.src =
-                                                "https://placehold.co/80x80";
-                                            }}
-                                        />
-
-                                    </td>
-
-                                    <td style={tdStyle}>
-
-                                        <strong>
-                                            {product.name}
-                                        </strong>
-
-                                    </td>
-
-                                    <td style={tdStyle}>
-                                        {product.category}
-                                    </td>
-
-                                    <td style={tdStyle}>
-                                        ₹{product.price}
-                                    </td>
-
-                                    <td style={tdStyle}>
-
-                                        <span
-                                            style={{
-                                                ...stockBadgeStyle,
-                                                backgroundColor:
-                                                    product.quantity > 0
-                                                        ? "#dcfce7"
-                                                        : "#fee2e2",
-                                                color:
-                                                    product.quantity > 0
-                                                        ? "#166534"
-                                                        : "#991b1b"
-                                            }}
-                                        >
-                                            {product.quantity}
-                                        </span>
-
-                                    </td>
-
-                                    <td style={tdStyle}>
-
-                                        <button
-                                            onClick={() =>
-                                                navigate(
-                                                    `/admin/update-product/${product.id}`
-                                                )
-                                            }
-                                            style={editButtonStyle}
-                                        >
-                                            Edit
-                                        </button>
-
-                                        <button
-                                            onClick={() =>
-                                                handleDelete(product.id)
-                                            }
-                                            style={deleteButtonStyle}
-                                        >
-                                            Delete
-                                        </button>
-
-                                    </td>
-
-                                </tr>
-                            ))
+                <div style={headerButtonsStyle}>
+                    <button
+                        style={ordersButtonStyle}
+                        onClick={() =>
+                            navigate("/admin/orders")
                         }
+                    >
+                        Manage Orders
+                    </button>
 
-                    </tbody>
-
-                </table>
-
+                    <button
+                        style={addButtonStyle}
+                        onClick={() =>
+                            navigate("/admin/add-product")
+                        }
+                    >
+                        Add Product
+                    </button>
+                </div>
             </div>
 
+            <div style={productsGridStyle}>
+                {products.map((product) => (
+                    <div
+                        key={product.id}
+                        style={productCardStyle}
+                    >
+                        <img
+                            src={
+                                product.imageUrl ||
+                                "https://placehold.co/300x300"
+                            }
+                            alt={product.name}
+                            style={imageStyle}
+                            onError={(e) => {
+                                e.target.src =
+                                    "https://placehold.co/300x300";
+                            }}
+                        />
+
+                        <div style={productInfoStyle}>
+                            <h3 style={productNameStyle}>
+                                {product.name}
+                            </h3>
+
+                            <p style={categoryStyle}>
+                                {product.category} /{" "}
+                                {product.section} /{" "}
+                                {product.subCategory}
+                            </p>
+
+                            <p style={priceStyle}>
+                                ₹{product.price}
+                            </p>
+
+                            <p style={stockStyle}>
+                                Stock:{" "}
+                                {product.quantity}
+                            </p>
+
+                            <div style={buttonContainerStyle}>
+                                <button
+                                    style={
+                                        updateButtonStyle
+                                    }
+                                    onClick={() =>
+                                        navigate(
+                                            `/admin/update-product/${product.id}`
+                                        )
+                                    }
+                                >
+                                    Update
+                                </button>
+
+                                <button
+                                    style={
+                                        deleteButtonStyle
+                                    }
+                                    onClick={() =>
+                                        handleDelete(
+                                            product.id
+                                        )
+                                    }
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
@@ -228,15 +160,15 @@ function AdminDashboard() {
 const pageStyle = {
     padding: "20px",
     paddingTop: "90px",
-    backgroundColor: "#f9fafb",
-    minHeight: "100vh"
+    minHeight: "100vh",
+    backgroundColor: "#f9fafb"
 };
 
 const headerStyle = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: "25px"
+    marginBottom: "30px"
 };
 
 const titleStyle = {
@@ -246,74 +178,109 @@ const titleStyle = {
 
 const subtitleStyle = {
     color: "#6b7280",
-    marginTop: "6px"
+    marginTop: "5px"
+};
+
+const headerButtonsStyle = {
+    display: "flex",
+    gap: "12px"
 };
 
 const addButtonStyle = {
     padding: "12px 18px",
     border: "none",
+    borderRadius: "8px",
     backgroundColor: "#2563eb",
     color: "white",
-    borderRadius: "8px",
     fontWeight: "bold",
     cursor: "pointer"
 };
 
-const tableContainerStyle = {
-    backgroundColor: "white",
-    borderRadius: "12px",
-    boxShadow:
-        "0 2px 12px rgba(0,0,0,0.08)",
-    overflow: "hidden"
-};
-
-const tableStyle = {
-    width: "100%",
-    borderCollapse: "collapse"
-};
-
-const thStyle = {
-    textAlign: "left",
-    padding: "15px",
+const ordersButtonStyle = {
+    padding: "12px 18px",
+    border: "none",
+    borderRadius: "8px",
     backgroundColor: "#111827",
-    color: "white"
+    color: "white",
+    fontWeight: "bold",
+    cursor: "pointer"
 };
 
-const tdStyle = {
-    padding: "15px",
-    borderBottom: "1px solid #e5e7eb",
-    verticalAlign: "middle"
+const productsGridStyle = {
+    display: "grid",
+    gridTemplateColumns:
+        "repeat(auto-fill, minmax(250px, 1fr))",
+    gap: "25px"
+};
+
+const productCardStyle = {
+    backgroundColor: "white",
+    borderRadius: "16px",
+    overflow: "hidden",
+    boxShadow:
+        "0 2px 12px rgba(0,0,0,0.08)"
 };
 
 const imageStyle = {
-    width: "70px",
-    height: "70px",
-    objectFit: "cover",
-    borderRadius: "8px"
+    width: "100%",
+    height: "250px",
+    objectFit: "contain",
+    backgroundColor: "#f3f4f6",
+    padding: "10px"
 };
 
-const stockBadgeStyle = {
-    padding: "6px 12px",
-    borderRadius: "20px",
-    fontWeight: "bold"
+const productInfoStyle = {
+    padding: "18px"
 };
 
-const editButtonStyle = {
-    padding: "8px 12px",
-    marginRight: "8px",
+const productNameStyle = {
+    margin: 0,
+    marginBottom: "10px",
+    color: "#111827"
+};
+
+const categoryStyle = {
+    color: "#6b7280",
+    marginBottom: "10px",
+    fontSize: "14px"
+};
+
+const priceStyle = {
+    color: "#2563eb",
+    fontWeight: "bold",
+    fontSize: "20px",
+    marginBottom: "10px"
+};
+
+const stockStyle = {
+    color: "#374151",
+    marginBottom: "18px"
+};
+
+const buttonContainerStyle = {
+    display: "flex",
+    gap: "10px"
+};
+
+const updateButtonStyle = {
+    flex: 1,
+    padding: "10px",
     border: "none",
-    backgroundColor: "#f59e0b",
+    borderRadius: "8px",
+    backgroundColor: "#2563eb",
     color: "white",
-    borderRadius: "6px",
+    fontWeight: "bold",
     cursor: "pointer"
 };
 
 const deleteButtonStyle = {
-    padding: "8px 12px",
+    flex: 1,
+    padding: "10px",
     border: "none",
-    backgroundColor: "#ef4444",
+    borderRadius: "8px",
+    backgroundColor: "#dc2626",
     color: "white",
-    borderRadius: "6px",
+    fontWeight: "bold",
     cursor: "pointer"
 };
 

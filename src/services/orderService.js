@@ -46,6 +46,43 @@ export const getOrderById = async (orderId) => {
     return response.data;
 };
 
+export const getAllOrdersForAdmin = async () => {
+    const token = localStorage.getItem("token");
+
+    const response = await axios.get(
+        `${API_URL}/admin/all`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+
+    return response.data;
+};
+
+export const updateOrderStatus = async (
+    orderId,
+    status
+) => {
+    const token = localStorage.getItem("token");
+
+    const response = await axios.put(
+        `${API_URL}/admin/${orderId}/status`,
+        {},
+        {
+            params: {
+                status
+            },
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+
+    return response.data;
+};
+
 export const cancelOrder = async (orderId) => {
     const token = localStorage.getItem("token");
 
