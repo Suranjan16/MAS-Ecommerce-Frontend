@@ -387,8 +387,8 @@ const buttonStyle = {
 
 const productsGridStyle = {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(220px, 220px))",
-    justifyContent: "start",
+    gridTemplateColumns: "repeat(5, 220px)",
+    justifyContent: "center",
     gap: "25px"
 };
 
@@ -402,8 +402,10 @@ const productCardStyle = {
 const imageStyle = {
     width: "220px",
     height: "240px",
-    objectFit: "cover",
-    cursor: "pointer"
+    objectFit: "contain",
+    backgroundColor: "#f3f4f6",
+    cursor: "pointer",
+    padding: "10px"
 };
 
 const productInfoStyle = {

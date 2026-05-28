@@ -31,6 +31,21 @@ export const getOrders = async () => {
     return response.data;
 };
 
+export const getOrderById = async (orderId) => {
+    const token = localStorage.getItem("token");
+
+    const response = await axios.get(
+        `${API_URL}/${orderId}`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+
+    return response.data;
+};
+
 export const cancelOrder = async (orderId) => {
     const token = localStorage.getItem("token");
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
     getOrders,
@@ -8,267 +9,213 @@ import {
 import { toast } from "react-toastify";
 
 function Orders() {
-
     const [orders, setOrders] = useState([]);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchOrders();
     }, []);
 
     const fetchOrders = async () => {
-
         try {
-
-            const data =
-                await getOrders();
+            const data = await getOrders();
 
             setOrders(data);
-
         } catch (error) {
-
             console.log(error);
-
-            toast.error(
-                "Failed to load orders"
-            );
+            toast.error("Failed to load orders");
         }
     };
 
-    const handleCancelOrder = async (
-        orderId
-    ) => {
-
+    const handleCancelOrder = async (orderId) => {
         try {
+            await cancelOrder(orderId);
 
-            const response =
-                await cancelOrder(orderId);
-
-            toast.success(response);
+            toast.success("Order cancelled successfully");
 
             fetchOrders();
-
         } catch (error) {
-
             console.log(error);
-
-            toast.error(
-                "Failed to cancel order"
-            );
-        }
-    };
-
-    const getStatusStyle = (status) => {
-
-        switch (status) {
-
-            case "PLACED":
-                return {
-                    backgroundColor: "#dbeafe",
-                    color: "#1d4ed8"
-                };
-
-            case "DELIVERED":
-                return {
-                    backgroundColor: "#dcfce7",
-                    color: "#166534"
-                };
-
-            case "CANCELLED":
-                return {
-                    backgroundColor: "#fee2e2",
-                    color: "#991b1b"
-                };
-
-            default:
-                return {
-                    backgroundColor: "#f3f4f6",
-                    color: "#374151"
-                };
+            toast.error("Failed to cancel order");
         }
     };
 
     return (
         <div style={pageStyle}>
+            <h1 style={titleStyle}>My Orders</h1>
 
-            <h1 style={titleStyle}>
-                My Orders
-            </h1>
+            {orders.length === 0 ? (
+                <div style={emptyContainerStyle}>
+                    <h2>No orders found</h2>
 
-            {
-                orders.length === 0 ? (
-
-                    <div style={emptyOrdersStyle}>
-
-                        <h2>
-                            No Orders Found
-                        </h2>
-
-                        <p>
-                            You have not placed any orders yet.
-                        </p>
-
-                    </div>
-
-                ) : (
-
-                    orders.map((order) => (
-
+                    <p>
+                        Start shopping to see your orders here.
+                    </p>
+                </div>
+            ) : (
+                <div style={ordersContainerStyle}>
+                    {orders.map((order) => (
                         <div
                             key={order.orderId}
                             style={orderCardStyle}
                         >
-
-                            <div style={topSectionStyle}>
-
+                            <div style={orderHeaderStyle}>
                                 <div>
-
-                                    <h3 style={orderIdStyle}>
+                                    <h2 style={orderIdStyle}>
                                         Order #{order.orderId}
-                                    </h3>
+                                    </h2>
 
                                     <p style={dateStyle}>
-                                        {
-                                            new Date(
-                                                order.createdAt
-                                            ).toLocaleString()
-                                        }
+                                        {new Date(
+                                            order.createdAt
+                                        ).toLocaleString()}
                                     </p>
-
                                 </div>
 
-                                <div
-                                    style={{
-                                        ...statusStyle,
-                                        ...getStatusStyle(
-                                            order.status
-                                        )
-                                    }}
-                                >
-                                    {order.status}
+                                <div style={statusContainerStyle}>
+                                    <span
+                                        style={{
+                                            ...statusStyle,
+                                            backgroundColor:
+                                                order.status ===
+                                                "DELIVERED"
+                                                    ? "#dcfce7"
+                                                    : order.status ===
+                                                      "CANCELLED"
+                                                    ? "#fee2e2"
+                                                    : "#dbeafe",
+                                            color:
+                                                order.status ===
+                                                "DELIVERED"
+                                                    ? "#166534"
+                                                    : order.status ===
+                                                      "CANCELLED"
+                                                    ? "#991b1b"
+                                                    : "#1d4ed8"
+                                        }}
+                                    >
+                                        {order.status}
+                                    </span>
                                 </div>
-
                             </div>
 
                             <div style={itemsContainerStyle}>
+                                {order.items.map((item, index) => (
+                                    <div
+                                        key={index}
+                                        style={itemCardStyle}
+                                    >
+                                        <img
+                                            src={
+                                                item.imageUrl ||
+                                                "https://placehold.co/120x120"
+                                            }
+                                            alt={item.productName}
+                                            style={productImageStyle}
+                                            onError={(e) => {
+                                                e.target.src =
+                                                    "https://placehold.co/120x120";
+                                            }}
+                                        />
 
-                                {
-                                    order.items?.map(
-                                        (
-                                            item,
-                                            index
-                                        ) => (
-
-                                            <div
-                                                key={index}
-                                                style={itemCardStyle}
+                                        <div
+                                            style={itemInfoStyle}
+                                        >
+                                            <h3
+                                                style={
+                                                    productNameStyle
+                                                }
                                             >
+                                                {
+                                                    item.productName
+                                                }
+                                            </h3>
 
-                                                <img
-                                                    src={
-                                                        item.imageUrl ||
-                                                        "https://placehold.co/100x100"
-                                                    }
-                                                    alt={
-                                                        item.productName
-                                                    }
-                                                    style={imageStyle}
-                                                    onError={(e) => {
-                                                        e.target.src =
-                                                            "https://placehold.co/100x100";
-                                                    }}
-                                                />
+                                            <p
+                                                style={
+                                                    itemTextStyle
+                                                }
+                                            >
+                                                Quantity:{" "}
+                                                {
+                                                    item.quantity
+                                                }
+                                            </p>
 
-                                                <div style={itemDetailsStyle}>
-
-                                                    <h4>
-                                                        {
-                                                            item.productName
-                                                        }
-                                                    </h4>
-
-                                                    <p>
-                                                        Quantity: {
-                                                            item.quantity
-                                                        }
-                                                    </p>
-
-                                                    <p>
-                                                        Price: ₹{
-                                                            item.price
-                                                        }
-                                                    </p>
-
-                                                </div>
-
-                                            </div>
-                                        )
-                                    )
-                                }
-
+                                            <p
+                                                style={
+                                                    itemPriceStyle
+                                                }
+                                            >
+                                                ₹{item.price}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
 
-                            <div style={bottomSectionStyle}>
-
+                            <div style={footerStyle}>
                                 <div>
-
-                                    <p>
-                                        Payment Method:
-                                        <strong>
-                                            {" "}
-                                            {
-                                                order.paymentMethod
-                                            }
-                                        </strong>
+                                    <p style={paymentStyle}>
+                                        Payment:{" "}
+                                        {order.paymentMethod}
                                     </p>
 
-                                    <p>
-                                        Payment Status:
-                                        <strong>
-                                            {" "}
-                                            {
-                                                order.paymentStatus
-                                            }
-                                        </strong>
+                                    <p style={paymentStatusStyle}>
+                                        Payment Status:{" "}
+                                        {
+                                            order.paymentStatus
+                                        }
                                     </p>
-
                                 </div>
 
-                                <div style={amountSectionStyle}>
-
-                                    <h2>
-                                        ₹{
+                                <div style={rightSectionStyle}>
+                                    <h2 style={totalStyle}>
+                                        ₹
+                                        {
                                             order.totalAmount
                                         }
                                     </h2>
 
-                                    {
-                                        order.status !==
+                                    <div>
+                                        <button
+                                            style={
+                                                trackButtonStyle
+                                            }
+                                            onClick={() =>
+                                                navigate(
+                                                    `/track-order/${order.orderId}`
+                                                )
+                                            }
+                                        >
+                                            Track Order
+                                        </button>
+
+                                        {order.status !==
                                             "CANCELLED" &&
-                                        order.status !==
-                                            "DELIVERED" && (
-
-                                            <button
-                                                style={cancelButtonStyle}
-                                                onClick={() =>
-                                                    handleCancelOrder(
-                                                        order.orderId
-                                                    )
-                                                }
-                                            >
-                                                Cancel Order
-                                            </button>
-                                        )
-                                    }
-
+                                            order.status !==
+                                                "DELIVERED" && (
+                                                <button
+                                                    style={
+                                                        cancelButtonStyle
+                                                    }
+                                                    onClick={() =>
+                                                        handleCancelOrder(
+                                                            order.orderId
+                                                        )
+                                                    }
+                                                >
+                                                    Cancel Order
+                                                </button>
+                                            )}
+                                    </div>
                                 </div>
-
                             </div>
-
                         </div>
-                    ))
-                )
-            }
-
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
@@ -276,24 +223,36 @@ function Orders() {
 const pageStyle = {
     padding: "20px",
     paddingTop: "90px",
-    backgroundColor: "#f9fafb",
-    minHeight: "100vh"
+    minHeight: "100vh",
+    backgroundColor: "#f9fafb"
 };
 
 const titleStyle = {
-    marginBottom: "25px",
+    textAlign: "center",
+    marginBottom: "30px",
     color: "#111827"
+};
+
+const emptyContainerStyle = {
+    textAlign: "center",
+    marginTop: "80px",
+    color: "#6b7280"
+};
+
+const ordersContainerStyle = {
+    display: "flex",
+    flexDirection: "column",
+    gap: "25px"
 };
 
 const orderCardStyle = {
     backgroundColor: "white",
-    borderRadius: "14px",
+    borderRadius: "16px",
     padding: "25px",
-    marginBottom: "25px",
     boxShadow: "0 2px 12px rgba(0,0,0,0.08)"
 };
 
-const topSectionStyle = {
+const orderHeaderStyle = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
@@ -307,12 +266,17 @@ const orderIdStyle = {
 
 const dateStyle = {
     color: "#6b7280",
-    marginTop: "6px"
+    marginTop: "5px"
+};
+
+const statusContainerStyle = {
+    display: "flex",
+    alignItems: "center"
 };
 
 const statusStyle = {
     padding: "8px 14px",
-    borderRadius: "30px",
+    borderRadius: "999px",
     fontWeight: "bold",
     fontSize: "14px"
 };
@@ -320,33 +284,51 @@ const statusStyle = {
 const itemsContainerStyle = {
     display: "flex",
     flexDirection: "column",
-    gap: "15px",
-    marginBottom: "25px"
+    gap: "18px",
+    marginBottom: "20px"
 };
 
 const itemCardStyle = {
     display: "flex",
-    gap: "16px",
-    padding: "15px",
-    border: "1px solid #e5e7eb",
-    borderRadius: "10px"
+    gap: "18px",
+    alignItems: "center",
+    padding: "14px",
+    borderRadius: "12px",
+    backgroundColor: "#f9fafb"
 };
 
-const imageStyle = {
-    width: "90px",
-    height: "90px",
-    objectFit: "cover",
-    borderRadius: "8px"
+const productImageStyle = {
+    width: "110px",
+    height: "110px",
+    objectFit: "contain",
+    backgroundColor: "#f3f4f6",
+    borderRadius: "10px",
+    padding: "8px"
 };
 
-const itemDetailsStyle = {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    gap: "6px"
+const itemInfoStyle = {
+    flex: 1
 };
 
-const bottomSectionStyle = {
+const productNameStyle = {
+    margin: 0,
+    marginBottom: "10px",
+    color: "#111827"
+};
+
+const itemTextStyle = {
+    margin: "4px 0",
+    color: "#6b7280"
+};
+
+const itemPriceStyle = {
+    marginTop: "10px",
+    fontWeight: "bold",
+    color: "#2563eb",
+    fontSize: "17px"
+};
+
+const footerStyle = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
@@ -354,27 +336,44 @@ const bottomSectionStyle = {
     paddingTop: "20px"
 };
 
-const amountSectionStyle = {
+const paymentStyle = {
+    margin: "5px 0",
+    color: "#374151"
+};
+
+const paymentStatusStyle = {
+    margin: "5px 0",
+    color: "#374151"
+};
+
+const rightSectionStyle = {
     textAlign: "right"
 };
 
-const cancelButtonStyle = {
-    marginTop: "10px",
+const totalStyle = {
+    color: "#111827",
+    marginBottom: "15px"
+};
+
+const trackButtonStyle = {
+    marginRight: "10px",
     padding: "10px 16px",
     border: "none",
-    backgroundColor: "#ef4444",
+    backgroundColor: "#2563eb",
     color: "white",
     borderRadius: "8px",
     fontWeight: "bold",
     cursor: "pointer"
 };
 
-const emptyOrdersStyle = {
-    textAlign: "center",
-    padding: "60px",
-    backgroundColor: "white",
-    borderRadius: "14px",
-    boxShadow: "0 2px 12px rgba(0,0,0,0.08)"
+const cancelButtonStyle = {
+    padding: "10px 16px",
+    border: "none",
+    backgroundColor: "#dc2626",
+    color: "white",
+    borderRadius: "8px",
+    fontWeight: "bold",
+    cursor: "pointer"
 };
 
 export default Orders;

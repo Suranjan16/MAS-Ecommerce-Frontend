@@ -17,6 +17,7 @@ import UpdateProduct from "./pages/UpdateProduct";
 import Profile from "./pages/Profile";
 import UpdateProfile from "./pages/UpdateProfile";
 import ProductDetails from "./pages/ProductDetails";
+import TrackOrder from "./pages/TrackOrder";
 
 function App() {
     return (
@@ -60,6 +61,11 @@ function App() {
                             <UpdateProduct />
                         </AdminRoute>
                     }
+                />
+
+                <Route
+                    path="/track-order/:orderId"
+                    element={<TrackOrder />}
                 />
             </Routes>
 
