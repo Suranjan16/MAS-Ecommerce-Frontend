@@ -9,6 +9,7 @@ import {
 import { toast } from "react-toastify";
 
 function Orders() {
+
     const [orders, setOrders] = useState([]);
 
     const navigate = useNavigate();
@@ -19,227 +20,341 @@ function Orders() {
 
     const fetchOrders = async () => {
         try {
+
             const data = await getOrders();
 
             setOrders(data);
+
         } catch (error) {
+
             console.log(error);
+
             toast.error("Failed to load orders");
         }
     };
 
     const handleCancelOrder = async (orderId) => {
+
         try {
+
             await cancelOrder(orderId);
 
-            toast.success("Order cancelled successfully");
+            toast.success(
+                "Order cancelled successfully"
+            );
 
             fetchOrders();
+
         } catch (error) {
+
             console.log(error);
+
             toast.error("Failed to cancel order");
         }
     };
 
     return (
         <div style={pageStyle}>
-            <h1 style={titleStyle}>My Orders</h1>
 
-            {orders.length === 0 ? (
-                <div style={emptyContainerStyle}>
-                    <h2>No orders found</h2>
+            <h1 style={titleStyle}>
+                My Orders
+            </h1>
 
-                    <p>
-                        Start shopping to see your orders here.
-                    </p>
-                </div>
-            ) : (
-                <div style={ordersContainerStyle}>
-                    {orders.map((order) => (
-                        <div
-                            key={order.orderId}
-                            style={orderCardStyle}
-                        >
-                            <div style={orderHeaderStyle}>
-                                <div>
-                                    <h2 style={orderIdStyle}>
-                                        Order #{order.orderId}
-                                    </h2>
+            {
+                orders.length === 0 ? (
 
-                                    <p style={dateStyle}>
-                                        {new Date(
-                                            order.createdAt
-                                        ).toLocaleString()}
-                                    </p>
-                                </div>
+                    <div style={emptyContainerStyle}>
+                        <h2>No orders found</h2>
 
-                                <div style={statusContainerStyle}>
-                                    <span
-                                        style={{
-                                            ...statusStyle,
-                                            backgroundColor:
-                                                order.status ===
-                                                "DELIVERED"
-                                                    ? "#dcfce7"
-                                                    : order.status ===
-                                                      "CANCELLED"
-                                                    ? "#fee2e2"
-                                                    : "#dbeafe",
-                                            color:
-                                                order.status ===
-                                                "DELIVERED"
-                                                    ? "#166534"
-                                                    : order.status ===
-                                                      "CANCELLED"
-                                                    ? "#991b1b"
-                                                    : "#1d4ed8"
-                                        }}
-                                    >
-                                        {order.status}
-                                    </span>
-                                </div>
-                            </div>
+                        <p>
+                            Start shopping to see
+                            your orders here.
+                        </p>
+                    </div>
 
-                            <div style={itemsContainerStyle}>
-                                {order.items.map((item, index) => (
-                                    <div
-                                        key={index}
-                                        style={itemCardStyle}
-                                    >
-                                        <img
-                                            src={
-                                                item.imageUrl ||
-                                                "https://placehold.co/120x120"
-                                            }
-                                            alt={item.productName}
-                                            style={productImageStyle}
-                                            onError={(e) => {
-                                                e.target.src =
-                                                    "https://placehold.co/120x120";
-                                            }}
-                                        />
+                ) : (
+
+                    <div style={ordersContainerStyle}>
+
+                        {
+                            orders.map((order) => (
+
+                                <div
+                                    key={order.orderId}
+                                    style={orderCardStyle}
+                                >
+
+                                    <div style={orderHeaderStyle}>
+
+                                        <div>
+
+                                            <h2 style={orderIdStyle}>
+                                                Order #
+                                                {
+                                                    order.orderId
+                                                }
+                                            </h2>
+
+                                            <p style={dateStyle}>
+                                                {
+                                                    new Date(
+                                                        order.createdAt
+                                                    ).toLocaleString()
+                                                }
+                                            </p>
+
+                                        </div>
 
                                         <div
-                                            style={itemInfoStyle}
+                                            style={
+                                                statusContainerStyle
+                                            }
                                         >
-                                            <h3
-                                                style={
-                                                    productNameStyle
-                                                }
+
+                                            <span
+                                                style={{
+                                                    ...statusStyle,
+
+                                                    backgroundColor:
+                                                        order.status ===
+                                                        "DELIVERED"
+                                                            ? "#dcfce7"
+                                                            : order.status ===
+                                                              "CANCELLED"
+                                                            ? "#fee2e2"
+                                                            : "#dbeafe",
+
+                                                    color:
+                                                        order.status ===
+                                                        "DELIVERED"
+                                                            ? "#166534"
+                                                            : order.status ===
+                                                              "CANCELLED"
+                                                            ? "#991b1b"
+                                                            : "#1d4ed8"
+                                                }}
                                             >
                                                 {
-                                                    item.productName
+                                                    order.status
                                                 }
-                                            </h3>
+                                            </span>
 
-                                            <p
-                                                style={
-                                                    itemTextStyle
-                                                }
-                                            >
-                                                Quantity:{" "}
-                                                {
-                                                    item.quantity
-                                                }
-                                            </p>
-
-                                            <p
-                                                style={
-                                                    itemPriceStyle
-                                                }
-                                            >
-                                                ₹{item.price}
-                                            </p>
                                         </div>
+
                                     </div>
-                                ))}
-                            </div>
 
-                            <div style={footerStyle}>
-                                {
-                                    order.status !==
-                                        "CANCELLED" && (
-                                        <div>
-                                            <p
-                                                style={
-                                                    paymentStyle
-                                                }
-                                            >
-                                                Payment:{" "}
-                                                {
-                                                    order.paymentMethod
-                                                }
-                                            </p>
+                                    <div style={itemsContainerStyle}>
 
-                                            <p
-                                                style={
-                                                    paymentStatusStyle
-                                                }
-                                            >
-                                                Payment Status:{" "}
-                                                {
-                                                    order.paymentStatus
-                                                }
-                                            </p>
-                                        </div>
-                                    )
-                                }
-
-                                <div style={rightSectionStyle}>
-                                    <h2 style={totalStyle}>
-                                        ₹
                                         {
-                                            order.totalAmount
-                                        }
-                                    </h2>
+                                            order.items.map(
+                                                (item, index) => (
 
-                                    <div>
-                                        {
-                                            order.status !==
-                                                "CANCELLED" && (
-                                                <button
-                                                    style={
-                                                        trackButtonStyle
-                                                    }
-                                                    onClick={() =>
-                                                        navigate(
-                                                            `/track-order/${order.orderId}`
-                                                        )
-                                                    }
-                                                >
-                                                    Track Order
-                                                </button>
+                                                    <div
+                                                        key={index}
+                                                        style={
+                                                            itemCardStyle
+                                                        }
+                                                    >
+
+                                                        <img
+                                                            src={
+                                                                item.imageUrl ||
+                                                                "https://placehold.co/120x120"
+                                                            }
+                                                            alt={
+                                                                item.productName
+                                                            }
+                                                            style={
+                                                                productImageStyle
+                                                            }
+                                                            onError={(
+                                                                e
+                                                            ) => {
+                                                                e.target.src =
+                                                                    "https://placehold.co/120x120";
+                                                            }}
+                                                        />
+
+                                                        <div
+                                                            style={
+                                                                itemInfoStyle
+                                                            }
+                                                        >
+
+                                                            <h3
+                                                                style={
+                                                                    productNameStyle
+                                                                }
+                                                            >
+                                                                {
+                                                                    item.productName
+                                                                }
+                                                            </h3>
+
+                                                            <p
+                                                                style={
+                                                                    itemTextStyle
+                                                                }
+                                                            >
+                                                                Quantity:
+                                                                {" "}
+                                                                {
+                                                                    item.quantity
+                                                                }
+                                                            </p>
+
+                                                            <p
+                                                                style={
+                                                                    itemPriceStyle
+                                                                }
+                                                            >
+                                                                ₹
+                                                                {
+                                                                    item.price
+                                                                }
+                                                            </p>
+
+                                                        </div>
+
+                                                    </div>
+                                                )
                                             )
                                         }
 
-                                        {
-                                            ![
-                                                "CANCELLED",
-                                                "DELIVERED"
-                                            ].includes(
-                                                order.status
-                                            ) && (
-                                                <button
-                                                    style={
-                                                        cancelButtonStyle
-                                                    }
-                                                    onClick={() =>
-                                                        handleCancelOrder(
-                                                            order.orderId
-                                                        )
-                                                    }
-                                                >
-                                                    Cancel Order
-                                                </button>
-                                            )
-                                        }
                                     </div>
+
+                                    {
+                                        order.paymentMethod === "ONLINE" &&
+                                        order.status !== "CANCELLED" && (
+
+                                            <div>
+
+                                                <p style={paymentStyle}>
+                                                    Payment:
+                                                    {" "}
+                                                    {order.paymentMethod}
+                                                </p>
+
+                                                <p style={paymentStatusStyle}>
+                                                    Payment Status:
+                                                    {" "}
+                                                    {order.paymentStatus}
+                                                </p>
+
+                                            </div>
+                                        )
+                                    }
+
+                                    <div style={addressContainerStyle}>
+
+                                        <h3 style={addressTitleStyle}>
+                                            Delivery Address
+                                        </h3>
+
+                                        <p style={addressTextStyle}>
+                                            {
+                                                order.fullName
+                                            }
+                                        </p>
+
+                                        <p style={addressTextStyle}>
+                                            {
+                                                order.phone
+                                            }
+                                        </p>
+
+                                        <p style={addressTextStyle}>
+                                            {
+                                                order.address
+                                            }
+                                        </p>
+
+                                        <p style={addressTextStyle}>
+                                            {
+                                                order.city
+                                            },{" "}
+                                            {
+                                                order.state
+                                            }{" "}
+                                            -{" "}
+                                            {
+                                                order.pincode
+                                            }
+                                        </p>
+
+                                    </div>
+
+                                    <div style={footerStyle}>
+
+                                        <div style={rightSectionStyle}>
+
+                                            <h2 style={totalStyle}>
+                                                ₹
+                                                {
+                                                    order.totalAmount
+                                                }
+                                            </h2>
+
+                                            <div>
+
+                                                {
+                                                    order.status !==
+                                                        "CANCELLED" && (
+
+                                                        <button
+                                                            style={
+                                                                trackButtonStyle
+                                                            }
+                                                            onClick={() =>
+                                                                navigate(
+                                                                    `/track-order/${order.orderId}`
+                                                                )
+                                                            }
+                                                        >
+                                                            Track
+                                                            Order
+                                                        </button>
+                                                    )
+                                                }
+
+                                                {
+                                                    ![
+                                                        "CANCELLED",
+                                                        "DELIVERED"
+                                                    ].includes(
+                                                        order.status
+                                                    ) && (
+
+                                                        <button
+                                                            style={
+                                                                cancelButtonStyle
+                                                            }
+                                                            onClick={() =>
+                                                                handleCancelOrder(
+                                                                    order.orderId
+                                                                )
+                                                            }
+                                                        >
+                                                            Cancel
+                                                            Order
+                                                        </button>
+                                                    )
+                                                }
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
                                 </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
+                            ))
+                        }
+
+                    </div>
+                )
+            }
+
         </div>
     );
 }
@@ -273,7 +388,8 @@ const orderCardStyle = {
     backgroundColor: "white",
     borderRadius: "16px",
     padding: "25px",
-    boxShadow: "0 2px 12px rgba(0,0,0,0.08)"
+    boxShadow:
+        "0 2px 12px rgba(0,0,0,0.08)"
 };
 
 const orderHeaderStyle = {
@@ -352,14 +468,6 @@ const itemPriceStyle = {
     fontSize: "17px"
 };
 
-const footerStyle = {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderTop: "1px solid #e5e7eb",
-    paddingTop: "20px"
-};
-
 const paymentStyle = {
     margin: "5px 0",
     color: "#374151"
@@ -368,6 +476,28 @@ const paymentStyle = {
 const paymentStatusStyle = {
     margin: "5px 0",
     color: "#374151"
+};
+
+const addressContainerStyle = {
+    marginTop: "15px"
+};
+
+const addressTitleStyle = {
+    marginBottom: "8px",
+    color: "#111827"
+};
+
+const addressTextStyle = {
+    margin: "3px 0",
+    color: "#4b5563"
+};
+
+const footerStyle = {
+    display: "flex",
+    justifyContent: "flex-end",
+    borderTop: "1px solid #e5e7eb",
+    paddingTop: "20px",
+    marginTop: "20px"
 };
 
 const rightSectionStyle = {

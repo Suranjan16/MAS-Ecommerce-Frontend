@@ -1,160 +1,452 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { getCart } from "../services/cartService";
 import { placeOrder } from "../services/orderService";
-
-import {
-    createPayment,
-    verifyPayment
-} from "../services/paymentService";
 
 import { toast } from "react-toastify";
 
 function Checkout() {
 
-    const [paymentMethod, setPaymentMethod] = useState("COD");
+    const [cart, setCart] = useState(null);
+
     const [loading, setLoading] = useState(false);
+
+    const [paymentMethod, setPaymentMethod] =
+        useState("COD");
+
+    const [fullName, setFullName] =
+        useState("");
+
+    const [phone, setPhone] =
+        useState("");
+
+    const [address, setAddress] =
+        useState("");
+
+    const [city, setCity] =
+        useState("");
+
+    const [state, setState] =
+        useState("");
+
+    const [pincode, setPincode] =
+        useState("");
 
     const navigate = useNavigate();
 
-    const handlePlaceOrder = async () => {
-        setLoading(true);
+    useEffect(() => {
+        fetchCart();
+    }, []);
+
+    const fetchCart = async () => {
 
         try {
-            const orderResponse = await placeOrder(paymentMethod);
 
-            toast.success(orderResponse.message);
+            const data = await getCart();
 
-            const orderId = orderResponse.orderId;
+            setCart(data);
 
+        } catch (error) {
+
+            console.log(error);
+
+            toast.error("Failed to load cart");
+        }
+    };
+
+    const handlePlaceOrder = async () => {
+
+        if (
+            !fullName ||
+            !phone ||
+            !address ||
+            !city ||
+            !state ||
+            !pincode
+        ) {
+
+            toast.error(
+                "Please fill all delivery details"
+            );
+
+            return;
+        }
+
+        try {
+
+            setLoading(true);
+
+            // COD FLOW
             if (paymentMethod === "COD") {
+
+                const response =
+                    await placeOrder({
+                        paymentMethod: "COD",
+                        paymentId: "",
+                        fullName,
+                        phone,
+                        address,
+                        city,
+                        state,
+                        pincode
+                    });
+
+                toast.success(response.message);
+
                 navigate("/orders");
+
                 return;
             }
 
-            const paymentResponse = await createPayment(orderId);
+            // RAZORPAY FLOW
+            if (paymentMethod === "ONLINE") {
 
-            const options = {
-                key: "rzp_test_Ss7dVslfyOs2t0",
-                amount: paymentResponse.amount,
-                currency: paymentResponse.currency,
-                name: "MAS",
-                description: "Order Payment",
-                order_id: paymentResponse.orderId,
+                const options = {
 
-                handler: async function (response) {
-                    console.log("Razorpay Response:", response);
+                    key: "rzp_test_Ss7dVslfyOs2t0",
 
-                    await verifyPayment(
-                        orderId,
-                        response.razorpay_payment_id,
-                        response.razorpay_order_id,
-                        response.razorpay_signature
-                    );
+                    amount:
+                        cart.totalAmount * 100,
 
-                    toast.success("Payment successful");
+                    currency: "INR",
 
-                    navigate("/orders");
-                },
+                    name: "MAS Store",
 
-                prefill: {
-                    name: "Suranjan",
-                    email: "test@example.com"
-                },
+                    description:
+                        "Order Payment",
 
-                theme: {
-                    color: "#2563eb"
-                }
-            };
+                    handler: async function (
+                        razorpayResponse
+                    ) {
 
-            const razorpay = new window.Razorpay(options);
+                        try {
 
-            razorpay.open();
+                            const response =
+                                await placeOrder({
+                                    paymentMethod:
+                                        "ONLINE",
+
+                                    paymentId:
+                                        razorpayResponse
+                                            .razorpay_payment_id,
+
+                                    fullName,
+                                    phone,
+                                    address,
+                                    city,
+                                    state,
+                                    pincode
+                                });
+
+                            toast.success(
+                                response.message
+                            );
+
+                            navigate("/orders");
+
+                        } catch (error) {
+
+                            console.log(error);
+
+                            toast.error(
+                                "Order placement failed"
+                            );
+                        }
+                    },
+
+                    prefill: {
+                        name: fullName,
+                        contact: phone
+                    },
+
+                    theme: {
+                        color: "#2563eb"
+                    }
+                };
+
+                const razorpay =
+                    new window.Razorpay(options);
+
+                razorpay.open();
+            }
 
         } catch (error) {
-            console.log("Checkout error:", error);
-            console.log("Status:", error.response?.status);
-            console.log("Data:", error.response?.data);
+
+            console.log(error);
 
             toast.error("Failed to place order");
+
         } finally {
+
             setLoading(false);
         }
     };
 
+    if (!cart) {
+
+        return (
+            <div style={loadingStyle}>
+                Loading...
+            </div>
+        );
+    }
+
     return (
         <div style={pageStyle}>
 
-            <div style={checkoutCardStyle}>
+            <div style={containerStyle}>
 
-                <h1 style={titleStyle}>
-                    Checkout
-                </h1>
+                <div style={leftSectionStyle}>
 
-                <p style={subtitleStyle}>
-                    Choose your payment method and place your order securely.
-                </p>
+                    <h1 style={titleStyle}>
+                        Checkout
+                    </h1>
 
-                <div style={sectionStyle}>
-                    <h3>
-                        Payment Method
-                    </h3>
+                    <div style={sectionStyle}>
 
-                    <label style={optionStyle}>
+                        <h2 style={sectionTitleStyle}>
+                            Delivery Details
+                        </h2>
+
                         <input
-                            type="radio"
-                            value="COD"
-                            checked={paymentMethod === "COD"}
+                            type="text"
+                            placeholder="Full Name"
+                            value={fullName}
                             onChange={(e) =>
-                                setPaymentMethod(e.target.value)
+                                setFullName(
+                                    e.target.value
+                                )
                             }
+                            style={inputStyle}
                         />
-                        Cash on Delivery
-                    </label>
 
-                    <label style={optionStyle}>
                         <input
-                            type="radio"
-                            value="RAZORPAY"
-                            checked={paymentMethod === "RAZORPAY"}
+                            type="text"
+                            placeholder="Phone Number"
+                            value={phone}
                             onChange={(e) =>
-                                setPaymentMethod(e.target.value)
+                                setPhone(
+                                    e.target.value
+                                )
                             }
+                            style={inputStyle}
                         />
-                        Razorpay Online Payment
-                    </label>
+
+                        <textarea
+                            placeholder="Address"
+                            value={address}
+                            onChange={(e) =>
+                                setAddress(
+                                    e.target.value
+                                )
+                            }
+                            style={textareaStyle}
+                        />
+
+                        <input
+                            type="text"
+                            placeholder="City"
+                            value={city}
+                            onChange={(e) =>
+                                setCity(
+                                    e.target.value
+                                )
+                            }
+                            style={inputStyle}
+                        />
+
+                        <input
+                            type="text"
+                            placeholder="State"
+                            value={state}
+                            onChange={(e) =>
+                                setState(
+                                    e.target.value
+                                )
+                            }
+                            style={inputStyle}
+                        />
+
+                        <input
+                            type="text"
+                            placeholder="Pincode"
+                            value={pincode}
+                            onChange={(e) =>
+                                setPincode(
+                                    e.target.value
+                                )
+                            }
+                            style={inputStyle}
+                        />
+
+                    </div>
+
+                    <div style={sectionStyle}>
+
+                        <h2 style={sectionTitleStyle}>
+                            Payment Method
+                        </h2>
+
+                        <div style={paymentOptionsStyle}>
+
+                            <label
+                                style={radioLabelStyle}
+                            >
+
+                                <input
+                                    type="radio"
+                                    value="COD"
+                                    checked={
+                                        paymentMethod ===
+                                        "COD"
+                                    }
+                                    onChange={(e) =>
+                                        setPaymentMethod(
+                                            e.target.value
+                                        )
+                                    }
+                                />
+
+                                Cash on Delivery
+
+                            </label>
+
+                            <label
+                                style={radioLabelStyle}
+                            >
+
+                                <input
+                                    type="radio"
+                                    value="ONLINE"
+                                    checked={
+                                        paymentMethod ===
+                                        "ONLINE"
+                                    }
+                                    onChange={(e) =>
+                                        setPaymentMethod(
+                                            e.target.value
+                                        )
+                                    }
+                                />
+
+                                Razorpay
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
                 </div>
 
-                <div style={infoBoxStyle}>
-                    {
-                        paymentMethod === "COD"
-                            ? "Pay when your order is delivered."
-                            : "You will be redirected to Razorpay secure payment gateway."
-                    }
+                <div style={rightSectionStyle}>
+
+                    <h2 style={summaryTitleStyle}>
+                        Order Summary
+                    </h2>
+
+                    <div style={itemsContainerStyle}>
+
+                        {
+                            cart.items.map(
+                                (item) => (
+
+                                    <div
+                                        key={
+                                            item.productId
+                                        }
+                                        style={
+                                            itemCardStyle
+                                        }
+                                    >
+
+                                        <img
+                                            src={
+                                                item.imageUrl
+                                            }
+                                            alt={
+                                                item.productName
+                                            }
+                                            style={
+                                                imageStyle
+                                            }
+                                        />
+
+                                        <div>
+
+                                            <h3
+                                                style={
+                                                    productNameStyle
+                                                }
+                                            >
+                                                {
+                                                    item.productName
+                                                }
+                                            </h3>
+
+                                            <p
+                                                style={
+                                                    itemTextStyle
+                                                }
+                                            >
+                                                Quantity:
+                                                {" "}
+                                                {
+                                                    item.quantity
+                                                }
+                                            </p>
+
+                                            <p
+                                                style={
+                                                    priceStyle
+                                                }
+                                            >
+                                                ₹
+                                                {
+                                                    item.price
+                                                }
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+                                )
+                            )
+                        }
+
+                    </div>
+
+                    <div style={totalSectionStyle}>
+
+                        <h2>
+                            Total: ₹
+                            {
+                                cart.totalAmount
+                            }
+                        </h2>
+
+                    </div>
+
+                    <button
+                        onClick={
+                            handlePlaceOrder
+                        }
+                        disabled={loading}
+                        style={
+                            placeOrderButtonStyle
+                        }
+                    >
+
+                        {
+                            loading
+                                ? "Processing..."
+                                : "Place Order"
+                        }
+
+                    </button>
+
                 </div>
-
-                <button
-                    onClick={handlePlaceOrder}
-                    disabled={loading}
-                    style={{
-                        ...placeOrderButtonStyle,
-                        opacity: loading ? 0.7 : 1,
-                        cursor: loading ? "not-allowed" : "pointer"
-                    }}
-                >
-                    {
-                        loading
-                            ? "Processing..."
-                            : "Place Order"
-                    }
-                </button>
-
-                <button
-                    onClick={() => navigate("/cart")}
-                    style={backButtonStyle}
-                >
-                    Back to Cart
-                </button>
 
             </div>
 
@@ -165,68 +457,161 @@ function Checkout() {
 const pageStyle = {
     padding: "20px",
     paddingTop: "90px",
-    display: "flex",
-    justifyContent: "center"
+    minHeight: "100vh",
+    backgroundColor: "#f9fafb"
 };
 
-const checkoutCardStyle = {
-    width: "450px",
-    padding: "25px",
-    borderRadius: "12px",
+const containerStyle = {
+    display: "grid",
+    gridTemplateColumns:
+        "1fr 400px",
+    gap: "30px"
+};
+
+const leftSectionStyle = {
+    display: "flex",
+    flexDirection: "column",
+    gap: "25px"
+};
+
+const rightSectionStyle = {
     backgroundColor: "white",
-    boxShadow: "0 2px 12px rgba(0,0,0,0.12)"
+    padding: "25px",
+    borderRadius: "16px",
+    height: "fit-content",
+    boxShadow:
+        "0 2px 12px rgba(0,0,0,0.08)"
 };
 
 const titleStyle = {
-    marginBottom: "5px"
-};
-
-const subtitleStyle = {
-    color: "#6b7280",
-    marginBottom: "25px"
+    margin: 0,
+    color: "#111827"
 };
 
 const sectionStyle = {
+    backgroundColor: "white",
+    padding: "25px",
+    borderRadius: "16px",
+    boxShadow:
+        "0 2px 12px rgba(0,0,0,0.08)"
+};
+
+const sectionTitleStyle = {
+    marginTop: 0,
+    marginBottom: "20px",
+    color: "#111827"
+};
+
+const inputStyle = {
+    width: "100%",
+    padding: "12px",
+    marginBottom: "15px",
+    borderRadius: "8px",
+    border:
+        "1px solid #d1d5db",
+    fontSize: "15px",
+    boxSizing: "border-box"
+};
+
+const textareaStyle = {
+    width: "100%",
+    minHeight: "100px",
+    padding: "12px",
+    marginBottom: "15px",
+    borderRadius: "8px",
+    border:
+        "1px solid #d1d5db",
+    fontSize: "15px",
+    resize: "vertical",
+    boxSizing: "border-box"
+};
+
+const paymentOptionsStyle = {
+    display: "flex",
+    flexDirection: "column",
+    gap: "15px"
+};
+
+const radioLabelStyle = {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    fontSize: "16px"
+};
+
+const summaryTitleStyle = {
+    marginTop: 0,
+    marginBottom: "20px",
+    color: "#111827"
+};
+
+const itemsContainerStyle = {
+    display: "flex",
+    flexDirection: "column",
+    gap: "18px",
     marginBottom: "20px"
 };
 
-const optionStyle = {
-    display: "block",
+const itemCardStyle = {
+    display: "flex",
+    gap: "15px",
+    alignItems: "center",
     padding: "12px",
-    marginBottom: "10px",
-    border: "1px solid #ddd",
-    borderRadius: "8px",
-    cursor: "pointer"
+    borderRadius: "12px",
+    backgroundColor: "#f9fafb"
 };
 
-const infoBoxStyle = {
-    padding: "12px",
+const imageStyle = {
+    width: "90px",
+    height: "90px",
+    objectFit: "contain",
     backgroundColor: "#f3f4f6",
     borderRadius: "8px",
-    marginBottom: "20px",
-    color: "#374151"
+    padding: "8px"
+};
+
+const productNameStyle = {
+    margin: 0,
+    marginBottom: "8px",
+    color: "#111827"
+};
+
+const itemTextStyle = {
+    margin: "4px 0",
+    color: "#6b7280"
+};
+
+const priceStyle = {
+    marginTop: "8px",
+    fontWeight: "bold",
+    color: "#2563eb"
+};
+
+const totalSectionStyle = {
+    borderTop:
+        "1px solid #e5e7eb",
+    paddingTop: "20px",
+    marginBottom: "20px"
 };
 
 const placeOrderButtonStyle = {
     width: "100%",
-    padding: "12px",
+    padding: "14px",
     border: "none",
-    backgroundColor: "#16a34a",
+    borderRadius: "10px",
+    backgroundColor: "#2563eb",
     color: "white",
-    borderRadius: "8px",
     fontSize: "16px",
-    fontWeight: "bold"
+    fontWeight: "bold",
+    cursor: "pointer"
 };
 
-const backButtonStyle = {
-    width: "100%",
-    padding: "10px",
-    marginTop: "12px",
-    border: "1px solid #ccc",
-    backgroundColor: "white",
-    color: "#374151",
-    borderRadius: "8px",
-    cursor: "pointer"
+const loadingStyle = {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh",
+    fontSize: "20px"
 };
 
 export default Checkout;
