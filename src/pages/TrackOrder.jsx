@@ -12,6 +12,14 @@ function TrackOrder() {
 
     const [order, setOrder] = useState(null);
 
+    const orderSteps = [
+        "PLACED",
+        "CONFIRMED",
+        "SHIPPED",
+        "OUT_FOR_DELIVERY",
+        "DELIVERED"
+    ];
+
     useEffect(() => {
         fetchOrder();
     }, []);
@@ -43,6 +51,9 @@ function TrackOrder() {
             </div>
         );
     }
+
+    const currentStepIndex =
+        orderSteps.indexOf(order.status);
 
     return (
         <div style={pageStyle}>
@@ -84,6 +95,106 @@ function TrackOrder() {
                     >
                         {order.status}
                     </div>
+
+                    {
+                        order.status !==
+                        "CANCELLED" ? (
+
+                            <div style={timelineContainerStyle}>
+
+                                {
+                                    orderSteps.map(
+                                        (
+                                            step,
+                                            index
+                                        ) => (
+
+                                            <div
+                                                key={step}
+                                                style={timelineStepStyle}
+                                            >
+
+                                                <div
+                                                    style={{
+                                                        ...circleStyle,
+
+                                                        backgroundColor:
+                                                            index <=
+                                                            currentStepIndex
+                                                                ? "#2563eb"
+                                                                : "#d1d5db"
+                                                    }}
+                                                >
+                                                    ✓
+                                                </div>
+
+                                                <p
+                                                    style={{
+                                                        ...stepTextStyle,
+
+                                                        color:
+                                                            index <=
+                                                            currentStepIndex
+                                                                ? "#111827"
+                                                                : "#9ca3af"
+                                                    }}
+                                                >
+                                                    {
+                                                        step.replaceAll(
+                                                            "_",
+                                                            " "
+                                                        )
+                                                    }
+                                                </p>
+
+                                                {
+                                                    index !==
+                                                        orderSteps.length -
+                                                            1 && (
+
+                                                        <div
+                                                            style={{
+                                                                ...lineStyle,
+
+                                                                backgroundColor:
+                                                                    index <
+                                                                    currentStepIndex
+                                                                        ? "#2563eb"
+                                                                        : "#d1d5db"
+                                                            }}
+                                                        ></div>
+                                                    )
+                                                }
+
+                                            </div>
+                                        )
+                                    )
+                                }
+
+                            </div>
+
+                        ) : (
+
+                            <div style={cancelledContainerStyle}>
+
+                                <div
+                                    style={cancelledCircleStyle}
+                                >
+                                    ✕
+                                </div>
+
+                                <p
+                                    style={
+                                        cancelledTextStyle
+                                    }
+                                >
+                                    This order has been
+                                    cancelled
+                                </p>
+
+                            </div>
+                        )
+                    }
 
                 </div>
 
@@ -198,20 +309,26 @@ function TrackOrder() {
                     </h2>
 
                     {
-                        order.paymentMethod === "ONLINE" &&
-                        order.status !== "CANCELLED" && (
+                        order.paymentMethod ===
+                            "ONLINE" &&
+                        order.status !==
+                            "CANCELLED" && (
 
                             <>
                                 <p style={textStyle}>
                                     Payment Method:
                                     {" "}
-                                    {order.paymentMethod}
+                                    {
+                                        order.paymentMethod
+                                    }
                                 </p>
 
                                 <p style={textStyle}>
                                     Payment Status:
                                     {" "}
-                                    {order.paymentStatus}
+                                    {
+                                        order.paymentStatus
+                                    }
                                 </p>
                             </>
                         )
@@ -263,6 +380,77 @@ const statusBadgeStyle = {
     display: "inline-block",
     padding: "12px 24px",
     borderRadius: "999px",
+    fontWeight: "bold",
+    fontSize: "18px",
+    marginBottom: "35px"
+};
+
+const timelineContainerStyle = {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: "20px",
+    position: "relative",
+    flexWrap: "wrap"
+};
+
+const timelineStepStyle = {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    flex: 1,
+    position: "relative"
+};
+
+const circleStyle = {
+    width: "40px",
+    height: "40px",
+    borderRadius: "50%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "white",
+    fontWeight: "bold",
+    zIndex: 2
+};
+
+const lineStyle = {
+    position: "absolute",
+    top: "20px",
+    left: "50%",
+    width: "100%",
+    height: "4px",
+    zIndex: 1
+};
+
+const stepTextStyle = {
+    marginTop: "10px",
+    fontSize: "14px",
+    fontWeight: "600",
+    textAlign: "center"
+};
+
+const cancelledContainerStyle = {
+    marginTop: "20px"
+};
+
+const cancelledCircleStyle = {
+    width: "60px",
+    height: "60px",
+    borderRadius: "50%",
+    backgroundColor: "#dc2626",
+    color: "white",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "28px",
+    fontWeight: "bold",
+    margin: "0 auto"
+};
+
+const cancelledTextStyle = {
+    marginTop: "15px",
+    color: "#991b1b",
     fontWeight: "bold",
     fontSize: "18px"
 };
