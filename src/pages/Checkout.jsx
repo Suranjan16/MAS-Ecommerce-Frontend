@@ -57,25 +57,87 @@ function Checkout() {
 
     const handlePlaceOrder = async () => {
 
-        if (
-            !fullName ||
-            !phone ||
-            !address ||
-            !city ||
-            !state ||
-            !pincode
-        ) {
+        const phoneRegex =
+            /^(\+91)?[6-9]\d{9}$/;
+
+        const pincodeRegex =
+            /^[1-9][0-9]{5}$/;
+
+        if (!fullName.trim()) {
 
             toast.error(
-                "Please fill all delivery details"
+                "Full name is required"
+            );
+
+            return;
+        }
+
+        if (!phone.trim()) {
+
+            toast.error(
+                "Phone number is required"
+            );
+
+            return;
+        }
+
+        if (!phoneRegex.test(phone)) {
+
+            toast.error(
+                "Enter a valid Indian phone number"
+            );
+
+            return;
+        }
+
+        if (!address.trim()) {
+
+            toast.error(
+                "Address is required"
+            );
+
+            return;
+        }
+
+        if (!city.trim()) {
+
+            toast.error(
+                "City is required"
+            );
+
+            return;
+        }
+
+        if (!state.trim()) {
+
+            toast.error(
+                "State is required"
+            );
+
+            return;
+        }
+
+        if (!pincode.trim()) {
+
+            toast.error(
+                "Pincode is required"
+            );
+
+            return;
+        }
+
+        if (!pincodeRegex.test(pincode)) {
+
+            toast.error(
+                "Enter a valid 6-digit pincode"
             );
 
             return;
         }
 
         try {
-
             setLoading(true);
+
 
             // COD FLOW
             if (paymentMethod === "COD") {
@@ -175,7 +237,32 @@ function Checkout() {
 
             console.log(error);
 
-            toast.error("Failed to place order");
+            if (error.response?.data) {
+
+            const errors =
+                error.response.data;
+
+            if (
+                typeof errors ===
+                "object"
+            ) {
+
+                Object.values(errors)
+                    .forEach(message => {
+                        toast.error(message);
+                    });
+
+            } else {
+
+                toast.error(errors);
+            }
+
+            } else {
+
+            toast.error(
+                "Failed to place order"
+            );
+            }
 
         } finally {
 
