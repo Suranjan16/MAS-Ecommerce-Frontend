@@ -17,48 +17,85 @@ function Login() {
 
     const handleLogin = async (e) => {
 
-        e.preventDefault();
+            e.preventDefault();
 
-        setLoading(true);
+            const emailRegex =
+                /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        try {
+            if (!emailRegex.test(email)) {
 
-            const data =
-                await loginUser(
-                    email,
-                    password
+                toast.error(
+                    "Enter a valid email address"
                 );
 
-            localStorage.setItem(
-                "token",
-                data.token
-            );
+                return;
+            }
 
-            localStorage.setItem(
-                "role",
-                data.role
-            );
+            setLoading(true);
 
-            toast.success(
-                "Login successful"
-            );
+            try {
 
-            navigate("/home");
+                const data =
+                    await loginUser(
+                        email,
+                        password
+                    );
 
-            window.location.reload();
+                localStorage.setItem(
+                    "token",
+                    data.token
+                );
 
-        } catch (error) {
+                localStorage.setItem(
+                    "role",
+                    data.role
+                );
 
-            console.log(error);
+                toast.success(
+                    "Login successful"
+                );
 
-            toast.error(
-                "Invalid email or password"
-            );
+                navigate("/home");
 
-        } finally {
+                window.location.reload();
 
-            setLoading(false);
-        }
+            } catch (error) {
+
+                console.log(error);
+
+                if (error.response?.data) {
+
+                    const errors =
+                        error.response.data;
+
+                    if (
+                        typeof errors ===
+                        "object"
+                    ) {
+
+                        Object.values(errors)
+                            .forEach(message => {
+                                toast.error(
+                                    message
+                                );
+                            });
+
+                    } else {
+
+                        toast.error(errors);
+                    }
+
+                } else {
+
+                    toast.error(
+                        "Invalid email or password"
+                    );
+                }
+
+            } finally {
+
+                setLoading(false);
+            }
     };
 
     return (

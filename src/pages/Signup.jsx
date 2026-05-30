@@ -27,6 +27,34 @@ function Signup() {
 
         e.preventDefault();
 
+        const emailRegex =
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!name.trim()) {
+
+            toast.error("Name is required");
+
+            return;
+        }
+
+        if (!emailRegex.test(email)) {
+
+            toast.error(
+                "Enter a valid email address"
+            );
+
+            return;
+        }
+
+        if (password.length < 6) {
+
+            toast.error(
+                "Password must be at least 6 characters"
+            );
+
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -37,7 +65,9 @@ function Signup() {
                 password
             });
 
-            toast.success("Signup successful");
+            toast.success(
+                "Signup successful"
+            );
 
             navigate("/login");
 
@@ -45,13 +75,42 @@ function Signup() {
 
             console.log(error);
 
-            toast.error("Signup failed");
+            if (error.response?.data) {
+
+                const errors =
+                    error.response.data;
+
+                if (
+                    typeof errors ===
+                    "object"
+                ) {
+
+                    Object.values(errors)
+                        .forEach(message => {
+                            toast.error(
+                                message
+                            );
+                        });
+
+                } else {
+
+                    toast.error(errors);
+                }
+
+            } else {
+
+                toast.error(
+                    "Signup failed"
+                );
+            }
 
         } finally {
 
             setLoading(false);
         }
+
     };
+
 
     return (
         <div style={pageStyle}>
