@@ -19,6 +19,8 @@ import UpdateProfile from "./pages/UpdateProfile";
 import ProductDetails from "./pages/ProductDetails";
 import TrackOrder from "./pages/TrackOrder";
 import AdminOrders from "./pages/AdminOrders";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
     return (
@@ -37,6 +39,8 @@ function App() {
                 <Route path="/profile/update" element={<UpdateProfile />} />
                 <Route path="/product/:id" element={<ProductDetails />} />
                 <Route path="/admin/orders" element={<AdminOrders />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
 
                 <Route
                     path="/admin"

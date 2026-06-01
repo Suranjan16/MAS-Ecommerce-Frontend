@@ -151,6 +151,25 @@ function Login() {
 
                     </div>
 
+                    <div
+                        style={{
+                            textAlign: "right",
+                            marginBottom: "18px"
+                        }}
+                    >
+                        <Link
+                            to="/forgot-password"
+                            style={{
+                                color: "#2563eb",
+                                textDecoration: "none",
+                                fontSize: "14px",
+                                fontWeight: "500"
+                            }}
+                        >
+                            Forgot Password?
+                        </Link>
+                    </div>
+
                     <button
                         type="submit"
                         disabled={loading}
