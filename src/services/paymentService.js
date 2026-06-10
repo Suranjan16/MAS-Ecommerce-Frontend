@@ -1,17 +1,21 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/payment";
+import API_URL from "../config/api";
+
+const PAYMENT_URL = `${API_URL}/payment`;
 
 export const createPayment = async (orderId) => {
-    const token = localStorage.getItem("token");
+
+    const token =
+        localStorage.getItem("token");
 
     const response = await axios.post(
-        `${API_URL}/create/${orderId}`,
+        `${PAYMENT_URL}/create/${orderId}`,
         {},
         {
             headers: {
-                Authorization: `Bearer ${token}`,
-            },
+                Authorization: `Bearer ${token}`
+            }
         }
     );
 
@@ -19,26 +23,21 @@ export const createPayment = async (orderId) => {
 };
 
 export const verifyPayment = async (
-    orderId,
-    razorpayPaymentId,
-    razorpayOrderId,
-    razorpaySignature
+    paymentData
 ) => {
-    const token = localStorage.getItem("token");
+
+    const token =
+        localStorage.getItem("token");
 
     const response = await axios.post(
-        `${API_URL}/verify`,
-        {
-            orderId,
-            razorpayPaymentId,
-            razorpayOrderId,
-            razorpaySignature,
-        },
+        `${PAYMENT_URL}/verify`,
+        paymentData,
         {
             headers: {
                 Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
+                "Content-Type":
+                    "application/json"
+            }
         }
     );
 

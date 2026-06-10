@@ -1,16 +1,16 @@
 import axios from "axios";
+import API_URL from "../config/api";
 
-const API_URL =
-    "http://localhost:8080/auth";
+const AUTH_URL = `${API_URL}/auth`;
 
 export const loginUser = async (
-    email,
-    password
+email,
+password
 ) => {
 
     const response =
         await axios.post(
-            `${API_URL}/login`,
+            `${AUTH_URL}/login`,
             {
                 email,
                 password
@@ -18,38 +18,44 @@ export const loginUser = async (
         );
 
     return response.data;
-};
+
+    };
 
 export const registerUser = async (
-    user
+user
 ) => {
 
     const response =
         await axios.post(
-            `${API_URL}/signup`,
+            `${AUTH_URL}/signup`,
             user
         );
 
     return response.data;
-};
+
+    };
 
 export const forgotPassword = async (email) => {
-    const response = await axios.post(
-        `${API_URL}/forgot-password`,
-        { email }
-    );
-
-    return response.data;
-};
-
-export const resetPassword = async (
-    token,
-    newPassword
-) => {
 
     const response =
         await axios.post(
-            `${API_URL}/reset-password`,
+            `${AUTH_URL}/forgot-password`,
+            { email }
+        );
+
+    return response.data;
+
+    };
+
+export const resetPassword = async (
+token,
+newPassword
+) => {
+
+
+    const response =
+        await axios.post(
+            `${AUTH_URL}/reset-password`,
             {
                 token,
                 newPassword
@@ -57,4 +63,5 @@ export const resetPassword = async (
         );
 
     return response.data;
-};
+
+    };

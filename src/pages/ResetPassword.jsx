@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
-import { toast } from "react-toastify";
 import axios from "axios";
+import { toast } from "react-toastify";
+
+import API_URL from "../config/api";
 
 function ResetPassword() {
-
     const [searchParams] = useSearchParams();
 
     const token = searchParams.get("token");
@@ -19,29 +20,23 @@ function ResetPassword() {
     const [loading, setLoading] = useState(false);
 
     const handleResetPassword = async (e) => {
-
         e.preventDefault();
 
         if (!token) {
-
             toast.error("Invalid reset link");
-
             return;
         }
 
         if (newPassword !== confirmPassword) {
-
             toast.error("Passwords do not match");
-
             return;
         }
 
         setLoading(true);
 
         try {
-
             const response = await axios.post(
-                "http://localhost:8080/auth/reset-password",
+                `${API_URL}/auth/reset-password`,
                 {
                     token,
                     newPassword
@@ -53,31 +48,22 @@ function ResetPassword() {
             setTimeout(() => {
                 navigate("/login");
             }, 1500);
-
         } catch (error) {
-
             console.log(error);
 
             if (error.response?.data) {
-
                 toast.error(error.response.data);
-
             } else {
-
                 toast.error("Failed to reset password");
             }
-
         } finally {
-
             setLoading(false);
         }
     };
 
     return (
         <div style={pageStyle}>
-
             <div style={cardStyle}>
-
                 <h1 style={titleStyle}>
                     Reset Password
                 </h1>
@@ -87,9 +73,7 @@ function ResetPassword() {
                 </p>
 
                 <form onSubmit={handleResetPassword}>
-
                     <div style={fieldStyle}>
-
                         <label style={labelStyle}>
                             New Password
                         </label>
@@ -104,11 +88,9 @@ function ResetPassword() {
                             style={inputStyle}
                             required
                         />
-
                     </div>
 
                     <div style={fieldStyle}>
-
                         <label style={labelStyle}>
                             Confirm Password
                         </label>
@@ -123,7 +105,6 @@ function ResetPassword() {
                             style={inputStyle}
                             required
                         />
-
                     </div>
 
                     <button
@@ -137,17 +118,12 @@ function ResetPassword() {
                                 : "pointer"
                         }}
                     >
-                        {
-                            loading
-                                ? "Resetting..."
-                                : "Reset Password"
-                        }
+                        {loading
+                            ? "Resetting..."
+                            : "Reset Password"}
                     </button>
-
                 </form>
-
             </div>
-
         </div>
     );
 }
